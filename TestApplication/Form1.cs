@@ -3,37 +3,59 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TestApplication
 {
     public partial class Form1 : Form
     {
-        private readonly string _recordsRoot;
-        private string _selectedFolder = string.Empty;
-        private string _selectedImagePath = string.Empty;
-        private string _newAttachedImagePath = string.Empty;
-        private string _originalFileNumber = string.Empty;
+        private PatientDatabase _database;
+        private long _selectedPatientId;
+        private byte[] _selectedImageData;
+        private byte[] _newImageData;
+        private string _selectedImageFileName = string.Empty;
+        private string _newImageFileName = string.Empty;
         private bool _isNewRecord;
         private bool _isEditMode;
 
         public Form1()
         {
             InitializeComponent();
-            _recordsRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PatientRecords");
-            Directory.CreateDirectory(_recordsRoot);
 
-            SetEditMode(false);
-            LoadPatients();
+            try
+            {
+                Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                _database = new PatientDatabase();
+                SetEditMode(false);
+                LoadPatients();
+                lblStatus.Text = "آماده — اطلاعات در SQLite ذخیره می‌شود";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "راه‌اندازی دیتابیس SQLite انجام نشد:\n" + ex.Message +
+                    "\n\nابتدا NuGet Package Restore را اجرا و پروژه را دوباره Build کنید.",
+                    "خطای دیتابیس",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void btnNew_Click(object sender, EventArgs e)
         {
+            if (!EnsureDatabaseReady())
+                return;
+
             ClearEditor();
             _isNewRecord = true;
             _isEditMode = true;
-            _originalFileNumber = string.Empty;
             SetEditMode(true);
             txtFirstName.Focus();
             lblStatus.Text = "در حال ایجاد پرونده جدید";
@@ -41,21 +63,21 @@ namespace TestApplication
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (!EnsurePatientSelected())
+            if (!EnsureDatabaseReady() || !EnsurePatientSelected())
                 return;
 
             _isNewRecord = false;
             _isEditMode = true;
-            _originalFileNumber = txtFileNumber.Text.Trim();
-            _newAttachedImagePath = string.Empty;
+            _newImageData = null;
+            _newImageFileName = string.Empty;
             SetEditMode(true);
             txtFirstName.Focus();
-            lblStatus.Text = "در حال اصلاح پرونده " + _originalFileNumber;
+            lblStatus.Text = "در حال اصلاح پرونده " + txtFileNumber.Text.Trim();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (!EnsurePatientSelected())
+            if (!EnsureDatabaseReady() || !EnsurePatientSelected())
                 return;
 
             string patientName = (txtFirstName.Text + " " + txtLastName.Text).Trim();
@@ -71,20 +93,15 @@ namespace TestApplication
 
             try
             {
-                ReleasePatientImage();
-
-                if (Directory.Exists(_selectedFolder))
-                    Directory.Delete(_selectedFolder, true);
-
+                _database.Delete(_selectedPatientId);
                 ClearEditor();
                 SetEditMode(false);
                 LoadPatients(txtSearch.Text.Trim());
-                lblStatus.Text = "پرونده با موفقیت حذف شد";
+                lblStatus.Text = "پرونده با موفقیت از دیتابیس حذف شد";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("حذف پرونده انجام نشد:\n" + ex.Message,
-                    "خطا", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowDatabaseError("حذف پرونده انجام نشد", ex);
             }
         }
 
@@ -95,7 +112,8 @@ namespace TestApplication
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadPatients(txtSearch.Text.Trim());
+            if (!_isEditMode)
+                LoadPatients(txtSearch.Text.Trim());
         }
 
         private void btnAttachImage_Click(object sender, EventArgs e)
@@ -106,7 +124,11 @@ namespace TestApplication
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.Title = "انتخاب تصویر بیمار";
-                dialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|JPEG Files|*.jpg;*.jpeg|PNG Files|*.png|All Files|*.*";
+                dialog.Filter =
+                    "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|" +
+                    "JPEG Files|*.jpg;*.jpeg|" +
+                    "PNG Files|*.png|" +
+                    "All Files|*.*";
                 dialog.Multiselect = false;
 
                 if (dialog.ShowDialog() != DialogResult.OK)
@@ -114,108 +136,83 @@ namespace TestApplication
 
                 try
                 {
-                    using (Image testImage = Image.FromFile(dialog.FileName))
+                    byte[] imageBytes = File.ReadAllBytes(dialog.FileName);
+
+                    using (MemoryStream stream = new MemoryStream(imageBytes))
+                    using (Image testImage = Image.FromStream(stream))
                     {
                     }
 
-                    _newAttachedImagePath = dialog.FileName;
-                    txtImagePath.Text = Path.GetFileName(dialog.FileName);
-                    ShowImage(dialog.FileName);
+                    _newImageData = imageBytes;
+                    _newImageFileName = Path.GetFileName(dialog.FileName);
+                    txtImagePath.Text = _newImageFileName;
+                    ShowImage(_newImageData);
                 }
                 catch
                 {
-                    MessageBox.Show("فایل انتخاب‌شده یک تصویر معتبر نیست.",
-                        "خطا", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "فایل انتخاب‌شده یک تصویر معتبر نیست.",
+                        "خطا",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (!_isEditMode || !ValidateForm())
+            if (!EnsureDatabaseReady() || !_isEditMode || !ValidateForm())
                 return;
 
             try
             {
                 string fileNumber = txtFileNumber.Text.Trim();
-                string safeFileNumber = MakeSafeFileName(fileNumber);
-                string targetFolder = Path.Combine(_recordsRoot, safeFileNumber);
+                long excludeId = _isNewRecord ? 0 : _selectedPatientId;
 
-                if (_isNewRecord)
+                if (_database.FileNumberExists(fileNumber, excludeId))
                 {
-                    if (Directory.Exists(targetFolder))
-                    {
-                        MessageBox.Show("پرونده‌ای با این شماره پرونده قبلاً ثبت شده است.",
-                            "شماره پرونده تکراری", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        txtFileNumber.Focus();
-                        return;
-                    }
-
-                    Directory.CreateDirectory(targetFolder);
-                }
-                else
-                {
-                    string originalSafeNumber = MakeSafeFileName(_originalFileNumber);
-                    string originalFolder = Path.Combine(_recordsRoot, originalSafeNumber);
-
-                    if (!string.Equals(originalSafeNumber, safeFileNumber, StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (Directory.Exists(targetFolder))
-                        {
-                            MessageBox.Show("شماره پرونده جدید قبلاً استفاده شده است.",
-                                "شماره پرونده تکراری", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            txtFileNumber.Focus();
-                            return;
-                        }
-
-                        ReleasePatientImage();
-                        if (Directory.Exists(originalFolder))
-                            Directory.Move(originalFolder, targetFolder);
-                        else
-                            Directory.CreateDirectory(targetFolder);
-                    }
-                    else
-                    {
-                        Directory.CreateDirectory(targetFolder);
-                    }
+                    MessageBox.Show(
+                        "پرونده‌ای با این شماره پرونده قبلاً ثبت شده است.",
+                        "شماره پرونده تکراری",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    txtFileNumber.Focus();
+                    return;
                 }
 
-                string savedImagePath = FindExistingImage(targetFolder);
+                byte[] imageData = _newImageData ?? _selectedImageData;
+                string imageFileName = !string.IsNullOrWhiteSpace(_newImageFileName)
+                    ? _newImageFileName
+                    : _selectedImageFileName;
 
-                if (!string.IsNullOrWhiteSpace(_newAttachedImagePath))
+                var patient = new PatientRecord
                 {
-                    string extension = Path.GetExtension(_newAttachedImagePath);
-                    string newImagePath = Path.Combine(targetFolder, "Attachment" + extension);
+                    Id = _isNewRecord ? 0 : _selectedPatientId,
+                    FirstName = txtFirstName.Text.Trim(),
+                    LastName = txtLastName.Text.Trim(),
+                    FileNumber = fileNumber,
+                    Mobile = txtMobile.Text.Trim(),
+                    ImageData = imageData,
+                    ImageFileName = imageFileName
+                };
 
-                    foreach (string oldImage in Directory.GetFiles(targetFolder, "Attachment.*"))
-                    {
-                        if (!string.Equals(oldImage, newImagePath, StringComparison.OrdinalIgnoreCase))
-                            File.Delete(oldImage);
-                    }
+                long savedId = _database.Save(patient);
 
-                    if (!string.Equals(_newAttachedImagePath, newImagePath, StringComparison.OrdinalIgnoreCase))
-                        File.Copy(_newAttachedImagePath, newImagePath, true);
-
-                    savedImagePath = newImagePath;
-                }
-
-                WritePatientInfo(targetFolder, savedImagePath);
-
-                _selectedFolder = targetFolder;
-                _selectedImagePath = savedImagePath;
-                _newAttachedImagePath = string.Empty;
-                _originalFileNumber = fileNumber;
+                _selectedPatientId = savedId;
+                _selectedImageData = imageData;
+                _selectedImageFileName = imageFileName;
+                _newImageData = null;
+                _newImageFileName = string.Empty;
                 _isNewRecord = false;
                 _isEditMode = false;
 
                 SetEditMode(false);
-                LoadPatients(txtSearch.Text.Trim(), fileNumber);
-                lblStatus.Text = "پرونده با موفقیت ذخیره شد";
+                LoadPatients(txtSearch.Text.Trim(), savedId);
+                lblStatus.Text = "پرونده با موفقیت در SQLite ذخیره شد";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("هنگام ذخیره پرونده خطایی رخ داد:\n" + ex.Message,
-                    "خطا", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowDatabaseError("ذخیره پرونده انجام نشد", ex);
             }
         }
 
@@ -223,11 +220,12 @@ namespace TestApplication
         {
             _isEditMode = false;
             _isNewRecord = false;
-            _newAttachedImagePath = string.Empty;
+            _newImageData = null;
+            _newImageFileName = string.Empty;
             SetEditMode(false);
 
-            if (dgvPatients.CurrentRow != null)
-                ShowSelectedPatient();
+            if (_selectedPatientId > 0)
+                ShowPatient(_selectedPatientId);
             else
                 ClearEditor();
 
@@ -236,10 +234,12 @@ namespace TestApplication
 
         private void dgvPatients_SelectionChanged(object sender, EventArgs e)
         {
-            if (_isEditMode)
+            if (_isEditMode || dgvPatients.CurrentRow == null || dgvPatients.CurrentRow.Tag == null)
                 return;
 
-            ShowSelectedPatient();
+            PatientRecord record = dgvPatients.CurrentRow.Tag as PatientRecord;
+            if (record != null)
+                ShowPatient(record.Id);
         }
 
         private void dgvPatients_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -248,145 +248,97 @@ namespace TestApplication
                 btnEdit.PerformClick();
         }
 
-        private void ShowSelectedPatient()
+        private void ShowPatient(long id)
         {
-            if (dgvPatients.CurrentRow == null || dgvPatients.CurrentRow.Tag == null)
+            if (!EnsureDatabaseReady())
                 return;
 
-            PatientRecord record = dgvPatients.CurrentRow.Tag as PatientRecord;
-            if (record == null)
-                return;
+            try
+            {
+                PatientRecord record = _database.GetById(id);
+                if (record == null)
+                    return;
 
-            _selectedFolder = record.FolderPath;
-            _selectedImagePath = record.ImagePath;
-            _originalFileNumber = record.FileNumber;
-            _newAttachedImagePath = string.Empty;
+                _selectedPatientId = record.Id;
+                _selectedImageData = record.ImageData;
+                _selectedImageFileName = record.ImageFileName ?? string.Empty;
+                _newImageData = null;
+                _newImageFileName = string.Empty;
 
-            txtFirstName.Text = record.FirstName;
-            txtLastName.Text = record.LastName;
-            txtFileNumber.Text = record.FileNumber;
-            txtMobile.Text = record.Mobile;
-            txtImagePath.Text = string.IsNullOrWhiteSpace(record.ImagePath)
-                ? "بدون تصویر"
-                : Path.GetFileName(record.ImagePath);
+                txtFirstName.Text = record.FirstName;
+                txtLastName.Text = record.LastName;
+                txtFileNumber.Text = record.FileNumber;
+                txtMobile.Text = record.Mobile;
+                txtImagePath.Text = string.IsNullOrWhiteSpace(record.ImageFileName)
+                    ? "بدون تصویر"
+                    : record.ImageFileName;
 
-            ShowImage(record.ImagePath);
-            lblStatus.Text = "پرونده " + record.FileNumber + " انتخاب شده است";
+                ShowImage(record.ImageData);
+                lblStatus.Text = "پرونده " + record.FileNumber + " انتخاب شده است";
+            }
+            catch (Exception ex)
+            {
+                ShowDatabaseError("خواندن پرونده انجام نشد", ex);
+            }
         }
 
-        private void LoadPatients(string searchText = "", string selectFileNumber = "")
+        private void LoadPatients(string searchText = "", long selectPatientId = 0)
         {
-            List<PatientRecord> records = ReadAllPatients();
-            string query = (searchText ?? string.Empty).Trim();
+            if (!EnsureDatabaseReady(false))
+                return;
 
-            if (!string.IsNullOrWhiteSpace(query))
+            try
             {
-                records = records.Where(p =>
-                    ContainsText(p.FirstName, query) ||
-                    ContainsText(p.LastName, query) ||
-                    ContainsText(p.FileNumber, query) ||
-                    ContainsText(p.Mobile, query) ||
-                    ContainsText(p.FirstName + " " + p.LastName, query))
-                    .ToList();
-            }
+                List<PatientRecord> records = _database.Search(searchText);
+                dgvPatients.Rows.Clear();
 
-            dgvPatients.Rows.Clear();
-
-            foreach (PatientRecord patient in records)
-            {
-                int rowIndex = dgvPatients.Rows.Add(
-                    patient.FileNumber,
-                    patient.FirstName,
-                    patient.LastName,
-                    patient.Mobile,
-                    patient.RegisteredAt);
-
-                dgvPatients.Rows[rowIndex].Tag = patient;
-            }
-
-            lblCount.Text = records.Count + " پرونده";
-
-            if (!string.IsNullOrWhiteSpace(selectFileNumber))
-            {
-                foreach (DataGridViewRow row in dgvPatients.Rows)
+                foreach (PatientRecord patient in records)
                 {
-                    PatientRecord item = row.Tag as PatientRecord;
-                    if (item != null && item.FileNumber == selectFileNumber)
+                    int rowIndex = dgvPatients.Rows.Add(
+                        patient.FileNumber,
+                        patient.FirstName,
+                        patient.LastName,
+                        patient.Mobile,
+                        patient.RegisteredAt);
+
+                    dgvPatients.Rows[rowIndex].Tag = patient;
+                }
+
+                lblCount.Text = records.Count + " پرونده";
+
+                if (selectPatientId > 0)
+                {
+                    foreach (DataGridViewRow row in dgvPatients.Rows)
                     {
-                        row.Selected = true;
-                        dgvPatients.CurrentCell = row.Cells[0];
-                        break;
+                        PatientRecord item = row.Tag as PatientRecord;
+                        if (item != null && item.Id == selectPatientId)
+                        {
+                            row.Selected = true;
+                            dgvPatients.CurrentCell = row.Cells[0];
+                            ShowPatient(item.Id);
+                            return;
+                        }
                     }
                 }
-            }
 
-            if (dgvPatients.Rows.Count == 0 && !_isEditMode)
-            {
-                ClearEditor();
-                lblStatus.Text = string.IsNullOrWhiteSpace(query)
-                    ? "هنوز پرونده‌ای ثبت نشده است"
-                    : "نتیجه‌ای برای جستجو پیدا نشد";
-            }
-        }
-
-        private List<PatientRecord> ReadAllPatients()
-        {
-            var result = new List<PatientRecord>();
-
-            if (!Directory.Exists(_recordsRoot))
-                return result;
-
-            foreach (string folder in Directory.GetDirectories(_recordsRoot))
-            {
-                string infoPath = Path.Combine(folder, "PatientInfo.txt");
-                if (!File.Exists(infoPath))
-                    continue;
-
-                try
+                if (dgvPatients.Rows.Count > 0 && dgvPatients.CurrentRow != null)
                 {
-                    string[] lines = File.ReadAllLines(infoPath, Encoding.UTF8);
-                    var record = new PatientRecord
-                    {
-                        FirstName = ReadValue(lines, "نام:"),
-                        LastName = ReadValue(lines, "نام خانوادگی:"),
-                        FileNumber = ReadValue(lines, "شماره پرونده:"),
-                        Mobile = ReadValue(lines, "شماره موبایل:"),
-                        RegisteredAt = ReadValue(lines, "تاریخ ثبت:"),
-                        FolderPath = folder,
-                        ImagePath = FindExistingImage(folder)
-                    };
-
-                    if (string.IsNullOrWhiteSpace(record.FileNumber))
-                        record.FileNumber = Path.GetFileName(folder);
-
-                    result.Add(record);
+                    PatientRecord first = dgvPatients.CurrentRow.Tag as PatientRecord;
+                    if (first != null && !_isEditMode)
+                        ShowPatient(first.Id);
                 }
-                catch
+                else if (!_isEditMode)
                 {
-                    // A damaged record should not stop the rest of the list from loading.
+                    ClearEditor();
+                    lblStatus.Text = string.IsNullOrWhiteSpace(searchText)
+                        ? "هنوز پرونده‌ای ثبت نشده است"
+                        : "نتیجه‌ای برای جستجو پیدا نشد";
                 }
             }
-
-            return result
-                .OrderByDescending(p => p.RegisteredAt)
-                .ThenBy(p => p.FileNumber)
-                .ToList();
-        }
-
-        private void WritePatientInfo(string patientFolder, string savedImagePath)
-        {
-            string infoPath = Path.Combine(patientFolder, "PatientInfo.txt");
-            string registeredAt = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-
-            string patientInfo =
-                "نام: " + txtFirstName.Text.Trim() + Environment.NewLine +
-                "نام خانوادگی: " + txtLastName.Text.Trim() + Environment.NewLine +
-                "شماره پرونده: " + txtFileNumber.Text.Trim() + Environment.NewLine +
-                "شماره موبایل: " + txtMobile.Text.Trim() + Environment.NewLine +
-                "فایل تصویر: " + (string.IsNullOrWhiteSpace(savedImagePath) ? "" : Path.GetFileName(savedImagePath)) + Environment.NewLine +
-                "تاریخ ثبت: " + registeredAt;
-
-            File.WriteAllText(infoPath, patientInfo, Encoding.UTF8);
+            catch (Exception ex)
+            {
+                ShowDatabaseError("خواندن لیست بیماران انجام نشد", ex);
+            }
         }
 
         private bool ValidateForm()
@@ -402,15 +354,18 @@ namespace TestApplication
             if (string.IsNullOrWhiteSpace(mobile))
                 return ValidationError("لطفاً شماره موبایل را وارد کنید.", txtMobile);
             if (!mobile.All(char.IsDigit) || mobile.Length < 10 || mobile.Length > 15)
-                return ValidationError("شماره موبایل باید فقط شامل عدد و بین 10 تا 15 رقم باشد.", txtMobile);
+                return ValidationError(
+                    "شماره موبایل باید فقط شامل عدد و بین 10 تا 15 رقم باشد.",
+                    txtMobile);
 
-            bool hasExistingImage = !_isNewRecord &&
-                (!string.IsNullOrWhiteSpace(_selectedImagePath) && File.Exists(_selectedImagePath));
-
-            if (string.IsNullOrWhiteSpace(_newAttachedImagePath) && !hasExistingImage)
+            byte[] imageData = _newImageData ?? _selectedImageData;
+            if (imageData == null || imageData.Length == 0)
             {
-                MessageBox.Show("لطفاً یک تصویر برای بیمار انتخاب کنید.",
-                    "اطلاعات ناقص", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    "لطفاً یک تصویر برای بیمار انتخاب کنید.",
+                    "اطلاعات ناقص",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 btnAttachImage.Focus();
                 return false;
             }
@@ -420,19 +375,42 @@ namespace TestApplication
 
         private bool ValidationError(string message, Control control)
         {
-            MessageBox.Show(message, "اطلاعات ناقص",
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(
+                message,
+                "اطلاعات ناقص",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
             control.Focus();
             return false;
         }
 
         private bool EnsurePatientSelected()
         {
-            if (dgvPatients.CurrentRow != null && dgvPatients.CurrentRow.Tag != null)
+            if (_selectedPatientId > 0)
                 return true;
 
-            MessageBox.Show("ابتدا یک پرونده را از لیست انتخاب کنید.",
-                "انتخاب پرونده", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                "ابتدا یک پرونده را از لیست انتخاب کنید.",
+                "انتخاب پرونده",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return false;
+        }
+
+        private bool EnsureDatabaseReady(bool showMessage = true)
+        {
+            if (_database != null)
+                return true;
+
+            if (showMessage)
+            {
+                MessageBox.Show(
+                    "دیتابیس SQLite در دسترس نیست. پروژه را Rebuild کنید و مطمئن شوید NuGet Package Restore انجام شده است.",
+                    "دیتابیس",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+
             return false;
         }
 
@@ -472,22 +450,24 @@ namespace TestApplication
             txtMobile.Clear();
             txtImagePath.Text = "تصویری انتخاب نشده است";
 
-            _selectedFolder = string.Empty;
-            _selectedImagePath = string.Empty;
-            _newAttachedImagePath = string.Empty;
-            _originalFileNumber = string.Empty;
+            _selectedPatientId = 0;
+            _selectedImageData = null;
+            _selectedImageFileName = string.Empty;
+            _newImageData = null;
+            _newImageFileName = string.Empty;
         }
 
-        private void ShowImage(string path)
+        private void ShowImage(byte[] imageData)
         {
             ReleasePatientImage();
 
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            if (imageData == null || imageData.Length == 0)
                 return;
 
             try
             {
-                using (Image source = Image.FromFile(path))
+                using (MemoryStream stream = new MemoryStream(imageData))
+                using (Image source = Image.FromStream(stream))
                     picPatientImage.Image = new Bitmap(source);
             }
             catch
@@ -505,48 +485,19 @@ namespace TestApplication
             }
         }
 
-        private string FindExistingImage(string folder)
+        private void ShowDatabaseError(string title, Exception ex)
         {
-            if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
-                return string.Empty;
-
-            return Directory.GetFiles(folder, "Attachment.*").FirstOrDefault() ?? string.Empty;
-        }
-
-        private string ReadValue(string[] lines, string key)
-        {
-            string line = lines.FirstOrDefault(x => x.StartsWith(key, StringComparison.Ordinal));
-            return line == null ? string.Empty : line.Substring(key.Length).Trim();
-        }
-
-        private bool ContainsText(string value, string query)
-        {
-            return (value ?? string.Empty).IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0;
-        }
-
-        private string MakeSafeFileName(string value)
-        {
-            foreach (char invalidChar in Path.GetInvalidFileNameChars())
-                value = value.Replace(invalidChar, '_');
-
-            return value;
+            MessageBox.Show(
+                title + ":\n" + ex.Message,
+                "خطای دیتابیس",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             ReleasePatientImage();
             base.OnFormClosed(e);
-        }
-
-        private sealed class PatientRecord
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string FileNumber { get; set; }
-            public string Mobile { get; set; }
-            public string RegisteredAt { get; set; }
-            public string FolderPath { get; set; }
-            public string ImagePath { get; set; }
         }
     }
 }
