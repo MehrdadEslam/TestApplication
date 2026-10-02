@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
 using System.Windows.Forms;
 
 namespace TestApplication
@@ -131,14 +133,17 @@ namespace TestApplication
             try
             {
                 List<PatientRecord> patients = _database.Search(searchText);
+                DisposeGridImages();
                 dgvPatients.Rows.Clear();
                 _selectedPatientId = 0;
 
                 int rowNumber = 1;
                 foreach (PatientRecord patient in patients)
                 {
+                    Bitmap thumbnail = CreatePatientThumbnail(patient.ImageData);
                     int index = dgvPatients.Rows.Add(
                         rowNumber++,
+                        thumbnail,
                         patient.FileNumber,
                         patient.FirstName + " " + patient.LastName,
                         patient.Mobile,
@@ -180,13 +185,75 @@ namespace TestApplication
             }
         }
 
+        private Bitmap CreatePatientThumbnail(byte[] imageData)
+        {
+            const int size = 52;
+            Bitmap result = new Bitmap(size, size);
+
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.Clear(Color.White);
+
+                if (imageData != null && imageData.Length > 0)
+                {
+                    try
+                    {
+                        using (MemoryStream stream = new MemoryStream(imageData))
+                        using (Image source = Image.FromStream(stream))
+                        {
+                            float scale = Math.Min((float)size / source.Width, (float)size / source.Height);
+                            int width = Math.Max(1, (int)(source.Width * scale));
+                            int height = Math.Max(1, (int)(source.Height * scale));
+                            int left = (size - width) / 2;
+                            int top = (size - height) / 2;
+                            g.DrawImage(source, new Rectangle(left, top, width, height));
+                            return result;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                using (SolidBrush circle = new SolidBrush(Color.FromArgb(226, 232, 240)))
+                    g.FillEllipse(circle, 6, 4, 40, 40);
+                using (SolidBrush person = new SolidBrush(Color.FromArgb(100, 116, 139)))
+                {
+                    g.FillEllipse(person, 19, 11, 14, 14);
+                    g.FillEllipse(person, 13, 26, 26, 20);
+                }
+            }
+
+            return result;
+        }
+
+        private void DisposeGridImages()
+        {
+            if (dgvPatients == null || !dgvPatients.Columns.Contains("colPhoto"))
+                return;
+
+            foreach (DataGridViewRow row in dgvPatients.Rows)
+            {
+                Image image = row.Cells["colPhoto"].Value as Image;
+                if (image != null)
+                    image.Dispose();
+            }
+        }
+
         private void UpdateActionState()
         {
             bool hasSelection = _selectedPatientId > 0;
             btnEdit.Enabled = hasSelection;
             btnDelete.Enabled = hasSelection;
-            btnEdit.BackColor = hasSelection ? Color.FromArgb(239, 246, 255) : Color.FromArgb(241, 245, 249);
-            btnDelete.BackColor = hasSelection ? Color.FromArgb(254, 242, 242) : Color.FromArgb(241, 245, 249);
+
+            btnEdit.BackColor = hasSelection
+                ? Color.FromArgb(239, 246, 255)
+                : Color.FromArgb(248, 250, 252);
+            btnDelete.BackColor = hasSelection
+                ? Color.FromArgb(254, 242, 242)
+                : Color.FromArgb(248, 250, 252);
         }
 
         private bool EnsureDatabaseReady(bool showMessage = true)
@@ -198,6 +265,12 @@ namespace TestApplication
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             return false;
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            DisposeGridImages();
+            base.OnFormClosed(e);
         }
     }
 }
