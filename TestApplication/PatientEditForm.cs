@@ -24,6 +24,7 @@ namespace TestApplication
             ConfigureInputFocusHighlight();
             ApplyApplicationIcon();
             ApplyButtonIcons();
+            Shown += PatientEditForm_Shown;
 
             if (_patientId > 0)
                 LoadPatient();
@@ -157,7 +158,22 @@ namespace TestApplication
             lblTitle.Text = "ایجاد پرونده بیمار";
             lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
             pnlHeader.Invalidate();
-            txtFirstName.Focus();
+        }
+
+        private void PatientEditForm_Shown(object sender, EventArgs e)
+        {
+            TextBox target = _patientId > 0 ? txtFirstName : txtFileNumber;
+
+            // Set focus only after the dialog is fully visible so Windows cannot
+            // move it to another control during form activation.
+            BeginInvoke(new Action(() =>
+            {
+                ActiveControl = target;
+                target.Focus();
+                target.SelectionStart = target.TextLength;
+                target.SelectionLength = 0;
+                pnlForm.Invalidate();
+            }));
         }
 
         private void LoadPatient()
