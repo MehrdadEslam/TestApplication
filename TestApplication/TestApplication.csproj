@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite" Version="2.0.4" />
+    <PackageReference Include="SQLite" Version="3.53.4" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
