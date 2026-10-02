@@ -69,7 +69,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="PatientDatabase.cs" />
-    <Compile Include="UiIcons.cs" />
+    <Compile Include="UiIcons.cs" />\n    <Compile Include="UiMessage.cs" />
     <Compile Include="PatientEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
