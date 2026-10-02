@@ -209,6 +209,7 @@ namespace TestApplication
             this.MinimizeBox = false;
             this.Name = "PatientEditForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RightToLeftLayout = true;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "پرونده بیمار";
             this.pnlHeader.ResumeLayout(false);
