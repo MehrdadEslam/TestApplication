@@ -3,5 +3,9 @@
   <Profiles>
     <Profile Name="(Default)" />
   </Profiles>
-  <Settings />
+  <Settings>
+    <Setting Name="FocusBorderColorArgb" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-2448096</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>
