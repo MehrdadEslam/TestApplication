@@ -34,7 +34,7 @@ namespace TestApplication
 
         private SQLiteConnection OpenConnection()
         {
-            var connection = new SQLiteConnection(_connectionString);
+            SQLiteConnection connection = new SQLiteConnection(_connectionString);
             connection.Open();
             return connection;
         }
@@ -45,43 +45,79 @@ namespace TestApplication
                 SQLiteConnection.CreateFile(_databasePath);
 
             using (SQLiteConnection connection = OpenConnection())
+            {
+                using (SQLiteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText =
+                        "CREATE TABLE IF NOT EXISTS Patients (" +
+                        "Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "FirstName TEXT NOT NULL, " +
+                        "LastName TEXT NOT NULL, " +
+                        "FatherName TEXT NULL, " +
+                        "FileNumber TEXT NOT NULL UNIQUE COLLATE NOCASE, " +
+                        "Mobile TEXT NOT NULL, " +
+                        "ImageData BLOB NULL, " +
+                        "ImageFileName TEXT NULL, " +
+                        "RegisteredAt TEXT NOT NULL, " +
+                        "UpdatedAt TEXT NOT NULL" +
+                        ");" +
+                        "CREATE INDEX IF NOT EXISTS IX_Patients_Name ON Patients(LastName, FirstName);" +
+                        "CREATE INDEX IF NOT EXISTS IX_Patients_Mobile ON Patients(Mobile);" +
+                        "CREATE TABLE IF NOT EXISTS AppSettings (" +
+                        "SettingKey TEXT PRIMARY KEY, SettingValue TEXT NULL" +
+                        ");";
+                    command.ExecuteNonQuery();
+                }
+
+                EnsureColumn(connection, "Patients", "FatherName", "TEXT NULL");
+            }
+        }
+
+        private void EnsureColumn(SQLiteConnection connection, string tableName, string columnName, string definition)
+        {
+            bool exists = false;
+
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText =
-                    "CREATE TABLE IF NOT EXISTS Patients (" +
-                    "Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "FirstName TEXT NOT NULL, " +
-                    "LastName TEXT NOT NULL, " +
-                    "FileNumber TEXT NOT NULL UNIQUE COLLATE NOCASE, " +
-                    "Mobile TEXT NOT NULL, " +
-                    "ImageData BLOB NULL, " +
-                    "ImageFileName TEXT NULL, " +
-                    "RegisteredAt TEXT NOT NULL, " +
-                    "UpdatedAt TEXT NOT NULL" +
-                    ");" +
-                    "CREATE INDEX IF NOT EXISTS IX_Patients_Name ON Patients(LastName, FirstName);" +
-                    "CREATE INDEX IF NOT EXISTS IX_Patients_Mobile ON Patients(Mobile);" +
-                    "CREATE TABLE IF NOT EXISTS AppSettings (" +
-                    "SettingKey TEXT PRIMARY KEY, SettingValue TEXT NULL" +
-                    ");";
+                command.CommandText = "PRAGMA table_info(" + tableName + ");";
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (string.Equals(Convert.ToString(reader["name"]), columnName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (exists)
+                return;
+
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition + ";";
                 command.ExecuteNonQuery();
             }
         }
 
         public List<PatientRecord> Search(string searchText)
         {
-            var result = new List<PatientRecord>();
+            List<PatientRecord> result = new List<PatientRecord>();
             string query = (searchText ?? string.Empty).Trim();
 
             using (SQLiteConnection connection = OpenConnection())
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 command.CommandText =
-                    "SELECT Id, FirstName, LastName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
+                    "SELECT Id, FirstName, LastName, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
                     "FROM Patients " +
                     "WHERE @Query = '' " +
                     "OR FirstName LIKE @LikeQuery " +
                     "OR LastName LIKE @LikeQuery " +
+                    "OR FatherName LIKE @LikeQuery " +
                     "OR (FirstName || ' ' || LastName) LIKE @LikeQuery " +
                     "OR FileNumber LIKE @LikeQuery " +
                     "OR Mobile LIKE @LikeQuery " +
@@ -106,14 +142,12 @@ namespace TestApplication
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 command.CommandText =
-                    "SELECT Id, FirstName, LastName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
+                    "SELECT Id, FirstName, LastName, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
                     "FROM Patients WHERE Id = @Id LIMIT 1;";
                 command.Parameters.AddWithValue("@Id", id);
 
                 using (SQLiteDataReader reader = command.ExecuteReader())
-                {
                     return reader.Read() ? ReadPatient(reader) : null;
-                }
             }
         }
 
@@ -144,8 +178,8 @@ namespace TestApplication
                 {
                     command.CommandText =
                         "INSERT INTO Patients " +
-                        "(FirstName, LastName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt) " +
-                        "VALUES (@FirstName, @LastName, @FileNumber, @Mobile, @ImageData, @ImageFileName, @RegisteredAt, @UpdatedAt); " +
+                        "(FirstName, LastName, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt) " +
+                        "VALUES (@FirstName, @LastName, @FatherName, @FileNumber, @Mobile, @ImageData, @ImageFileName, @RegisteredAt, @UpdatedAt); " +
                         "SELECT last_insert_rowid();";
                     command.Parameters.AddWithValue("@RegisteredAt", now);
                 }
@@ -153,7 +187,7 @@ namespace TestApplication
                 {
                     command.CommandText =
                         "UPDATE Patients SET " +
-                        "FirstName=@FirstName, LastName=@LastName, FileNumber=@FileNumber, Mobile=@Mobile, " +
+                        "FirstName=@FirstName, LastName=@LastName, FatherName=@FatherName, FileNumber=@FileNumber, Mobile=@Mobile, " +
                         "ImageData=@ImageData, ImageFileName=@ImageFileName, UpdatedAt=@UpdatedAt " +
                         "WHERE Id=@Id; " +
                         "SELECT @Id;";
@@ -162,6 +196,8 @@ namespace TestApplication
 
                 command.Parameters.AddWithValue("@FirstName", patient.FirstName.Trim());
                 command.Parameters.AddWithValue("@LastName", patient.LastName.Trim());
+                command.Parameters.AddWithValue("@FatherName",
+                    string.IsNullOrWhiteSpace(patient.FatherName) ? (object)DBNull.Value : patient.FatherName.Trim());
                 command.Parameters.AddWithValue("@FileNumber", patient.FileNumber.Trim());
                 command.Parameters.AddWithValue("@Mobile", patient.Mobile.Trim());
                 command.Parameters.AddWithValue("@ImageFileName",
@@ -195,6 +231,7 @@ namespace TestApplication
                 Id = Convert.ToInt64(reader["Id"]),
                 FirstName = Convert.ToString(reader["FirstName"]),
                 LastName = Convert.ToString(reader["LastName"]),
+                FatherName = reader["FatherName"] == DBNull.Value ? string.Empty : Convert.ToString(reader["FatherName"]),
                 FileNumber = Convert.ToString(reader["FileNumber"]),
                 Mobile = Convert.ToString(reader["Mobile"]),
                 ImageData = reader["ImageData"] == DBNull.Value ? null : (byte[])reader["ImageData"],
@@ -234,10 +271,11 @@ namespace TestApplication
                     string imagePath = Directory.GetFiles(folder, "Attachment.*").FirstOrDefault();
                     byte[] imageData = imagePath == null ? null : File.ReadAllBytes(imagePath);
 
-                    var patient = new PatientRecord
+                    PatientRecord patient = new PatientRecord
                     {
                         FirstName = ReadLegacyValue(lines, "نام:"),
                         LastName = ReadLegacyValue(lines, "نام خانوادگی:"),
+                        FatherName = ReadLegacyValue(lines, "نام پدر:"),
                         FileNumber = fileNumber,
                         Mobile = ReadLegacyValue(lines, "شماره موبایل:"),
                         ImageData = imageData,
@@ -297,6 +335,7 @@ namespace TestApplication
         public long Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string FatherName { get; set; }
         public string FileNumber { get; set; }
         public string Mobile { get; set; }
         public byte[] ImageData { get; set; }
