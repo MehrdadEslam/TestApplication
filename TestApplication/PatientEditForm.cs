@@ -13,7 +13,7 @@ namespace TestApplication
         private byte[] _imageData;
         private string _imageFileName = string.Empty;
 
-        public PatientEditForm(PatientDatabase database, long patientId = 0)
+        internal PatientEditForm(PatientDatabase database, long patientId = 0)
         {
             _database = database;
             _patientId = patientId;
