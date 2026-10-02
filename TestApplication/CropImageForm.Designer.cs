@@ -12,7 +12,18 @@ namespace TestApplication
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null)) components.Dispose();
+            if (disposing)
+            {
+                if (CroppedImage != null)
+                {
+                    CroppedImage.Dispose();
+                    CroppedImage = null;
+                }
+
+                if (components != null)
+                    components.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
