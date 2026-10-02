@@ -21,6 +21,7 @@ namespace TestApplication
 
             InitializeComponent();
             ConfigurePersianLayout();
+            ConfigureInputFocusHighlight();
             ApplyApplicationIcon();
             ApplyButtonIcons();
 
@@ -55,6 +56,47 @@ namespace TestApplication
             lblSubtitle.RightToLeft = RightToLeft.Yes;
             lblTitle.BringToFront();
             lblSubtitle.BringToFront();
+        }
+
+        private void ConfigureInputFocusHighlight()
+        {
+            TextBox[] editableInputs =
+            {
+                txtFirstName, txtLastName, txtFatherName, txtFileNumber, txtMobile
+            };
+
+            foreach (TextBox input in editableInputs)
+            {
+                input.Enter += Input_EnterOrLeave;
+                input.Leave += Input_EnterOrLeave;
+            }
+
+            pnlForm.Paint += pnlForm_Paint;
+        }
+
+        private void Input_EnterOrLeave(object sender, EventArgs e)
+        {
+            pnlForm.Invalidate();
+        }
+
+        private void pnlForm_Paint(object sender, PaintEventArgs e)
+        {
+            TextBox[] editableInputs =
+            {
+                txtFirstName, txtLastName, txtFatherName, txtFileNumber, txtMobile
+            };
+
+            TextBox focusedInput = editableInputs.FirstOrDefault(input => input.Focused);
+            if (focusedInput == null)
+                return;
+
+            Rectangle focusBorder = focusedInput.Bounds;
+            focusBorder.Inflate(3, 3);
+
+            using (Pen pen = new Pen(Color.FromArgb(37, 99, 235), 3F))
+            {
+                e.Graphics.DrawRectangle(pen, focusBorder);
+            }
         }
 
         private void ApplyApplicationIcon()
