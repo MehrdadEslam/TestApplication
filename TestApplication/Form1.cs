@@ -25,8 +25,7 @@ namespace TestApplication
             }
             catch (Exception ex)
             {
-                MessageBox.Show("راه‌اندازی دیتابیس SQLite انجام نشد:\n" + ex.Message,
-                    "خطای دیتابیس", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UiMessage.Error(this, "راه‌اندازی دیتابیس SQLite انجام نشد:\n" + ex.Message, "خطای دیتابیس");
             }
 
             UpdateActionState();
@@ -76,13 +75,10 @@ namespace TestApplication
             PatientRecord patient = _database.GetById(_selectedPatientId);
             if (patient == null) return;
 
-            DialogResult result = MessageBox.Show(
+            DialogResult result = UiMessage.Confirm(this,
                 "آیا از حذف پرونده «" + patient.FirstName + " " + patient.LastName + "» مطمئن هستید؟\n" +
                 "شماره پرونده: " + patient.FileNumber + "\n\nاین عملیات قابل بازگشت نیست.",
-                "تأیید حذف پرونده",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2);
+                "تأیید حذف پرونده");
 
             if (result != DialogResult.Yes) return;
 
@@ -95,8 +91,7 @@ namespace TestApplication
             }
             catch (Exception ex)
             {
-                MessageBox.Show("حذف پرونده انجام نشد:\n" + ex.Message,
-                    "خطای دیتابیس", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UiMessage.Error(this, "حذف پرونده انجام نشد:\n" + ex.Message, "خطای دیتابیس");
             }
         }
 
@@ -180,8 +175,7 @@ namespace TestApplication
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خواندن لیست بیماران انجام نشد:\n" + ex.Message,
-                    "خطای دیتابیس", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UiMessage.Error(this, "خواندن لیست بیماران انجام نشد:\n" + ex.Message, "خطای دیتابیس");
             }
         }
 
@@ -261,8 +255,7 @@ namespace TestApplication
             if (_database != null) return true;
 
             if (showMessage)
-                MessageBox.Show("دیتابیس SQLite در دسترس نیست.", "دیتابیس",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                UiMessage.Warning(this, "دیتابیس SQLite در دسترس نیست.", "دیتابیس");
 
             return false;
         }
