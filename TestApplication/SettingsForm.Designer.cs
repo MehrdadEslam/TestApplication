@@ -136,6 +136,7 @@ namespace TestApplication
             this.MaximizeBox = false;
             this.Name = "SettingsForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RightToLeftLayout = true;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "تنظیمات نرم افزار";
             this.pnlHeader.ResumeLayout(false);
