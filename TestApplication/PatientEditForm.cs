@@ -100,6 +100,53 @@ namespace TestApplication
             pnlForm.Paint += pnlForm_Paint;
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            bool shiftPressed = (keyData & Keys.Shift) == Keys.Shift;
+            Keys keyCode = keyData & Keys.KeyCode;
+
+            if ((keyCode == Keys.Tab || keyCode == Keys.Enter) && TryMoveFromPatientInput(!shiftPressed))
+                return true;
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private bool TryMoveFromPatientInput(bool forward)
+        {
+            Control[] navigationOrder =
+            {
+                txtFileNumber,
+                txtFirstName,
+                txtLastName,
+                txtMobile,
+                txtFatherName
+            };
+
+            int currentIndex = Array.FindIndex(navigationOrder, control => control.Focused);
+            if (currentIndex < 0)
+                return false;
+
+            if (!forward)
+            {
+                if (currentIndex == 0)
+                    return false;
+
+                navigationOrder[currentIndex - 1].Focus();
+                return true;
+            }
+
+            if (currentIndex < navigationOrder.Length - 1)
+            {
+                navigationOrder[currentIndex + 1].Focus();
+                return true;
+            }
+
+            // After the last text field, continue keyboard navigation to the
+            // image section so the form can be completed without using a mouse.
+            btnAttachImage.Focus();
+            return true;
+        }
+
         private void Input_Enter(object sender, EventArgs e)
         {
             TextBox input = sender as TextBox;
