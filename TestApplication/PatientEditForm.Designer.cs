@@ -90,7 +90,7 @@ namespace TestApplication
             this.lblTitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.lblTitle.Size = new System.Drawing.Size(876, 32);
             this.lblTitle.Text = "ایجاد پرونده بیمار";
-            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 
             this.lblSubtitle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.lblSubtitle.BackColor = System.Drawing.Color.Transparent;
@@ -100,7 +100,7 @@ namespace TestApplication
             this.lblSubtitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.lblSubtitle.Size = new System.Drawing.Size(876, 22);
             this.lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
-            this.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 
             this.pnlForm.BackColor = System.Drawing.Color.White;
             this.pnlForm.Controls.Add(this.lblImageHint);
