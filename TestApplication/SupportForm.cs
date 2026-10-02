@@ -37,7 +37,7 @@ namespace TestApplication
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
-            ClientSize = new Size(720, 560);
+            ClientSize = new Size(720, 600);
             BackColor = Color.FromArgb(241, 245, 249);
             Font = new Font("Tahoma", 9F);
             RightToLeft = RightToLeft.Yes;
@@ -72,7 +72,7 @@ namespace TestApplication
             header.Controls.Add(title);
             header.Controls.Add(subtitle);
 
-            Panel infoPanel = CreateCard(new Point(28, 108), new Size(664, 168));
+            Panel infoPanel = CreateCard(new Point(28, 108), new Size(664, 190));
             Label infoTitle = CreateSectionTitle("اطلاعات شبکه و Firewall", 18);
             infoPanel.Controls.Add(infoTitle);
 
@@ -92,7 +92,7 @@ namespace TestApplication
             lblPublicValue = CreateValueLabel(156);
             infoPanel.Controls.Add(lblPublicValue);
 
-            Panel actionPanel = CreateCard(new Point(28, 294), new Size(664, 176));
+            Panel actionPanel = CreateCard(new Point(28, 316), new Size(664, 176));
             actionPanel.Controls.Add(CreateSectionTitle("تغییر وضعیت Firewall", 18));
 
             Label hint = new Label
@@ -160,7 +160,7 @@ namespace TestApplication
                 BackColor = Color.White,
                 ForeColor = Color.FromArgb(51, 65, 85),
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(28, 492),
+                Location = new Point(28, 514),
                 Size = new Size(130, 42)
             };
             btnClose.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
