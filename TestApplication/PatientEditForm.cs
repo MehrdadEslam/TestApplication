@@ -40,7 +40,7 @@ namespace TestApplication
             // physically on the right side of a TextBox.
             TextBox[] inputs =
             {
-                txtFirstName, txtLastName, txtFatherName,
+                txtFirstName, txtLastName, txtNationalId, txtBirthDate, txtFatherName,
                 txtFileNumber, txtMobile, txtImagePath
             };
 
@@ -66,7 +66,7 @@ namespace TestApplication
             string title = _patientId > 0 ? "اصلاح پرونده بیمار" : "ایجاد پرونده بیمار";
             string subtitle = _patientId > 0
                 ? "اطلاعات پرونده و تصویر بیمار را می‌توانید اصلاح کنید."
-                : "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
+                : "اطلاعات پرونده را تکمیل کنید؛ کد ملی، تاریخ تولد، نام پدر و تصویر اختیاری هستند.";
 
             Rectangle titleBounds = new Rectangle(24, 7, pnlHeader.ClientSize.Width - 48, 34);
             Rectangle subtitleBounds = new Rectangle(24, 40, pnlHeader.ClientSize.Width - 48, 25);
@@ -86,7 +86,8 @@ namespace TestApplication
         {
             TextBox[] editableInputs =
             {
-                txtFirstName, txtLastName, txtFatherName, txtFileNumber, txtMobile
+                txtFirstName, txtLastName, txtNationalId, txtBirthDate,
+                txtFatherName, txtFileNumber, txtMobile
             };
 
             foreach (TextBox input in editableInputs)
@@ -118,6 +119,8 @@ namespace TestApplication
                 txtFileNumber,
                 txtFirstName,
                 txtLastName,
+                txtNationalId,
+                txtBirthDate,
                 txtMobile,
                 txtFatherName
             };
@@ -169,7 +172,8 @@ namespace TestApplication
         {
             TextBox[] editableInputs =
             {
-                txtFirstName, txtLastName, txtFatherName, txtFileNumber, txtMobile
+                txtFirstName, txtLastName, txtNationalId, txtBirthDate,
+                txtFatherName, txtFileNumber, txtMobile
             };
 
             TextBox focusedInput = editableInputs.FirstOrDefault(input => input.Focused);
@@ -203,7 +207,7 @@ namespace TestApplication
         {
             Text = "ایجاد پرونده بیمار";
             lblTitle.Text = "ایجاد پرونده بیمار";
-            lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
+            lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ کد ملی، تاریخ تولد، نام پدر و تصویر اختیاری هستند.";
             txtFileNumber.Text = _database.GetNextFileNumber();
             pnlHeader.Invalidate();
         }
@@ -242,6 +246,8 @@ namespace TestApplication
 
             txtFirstName.Text = patient.FirstName;
             txtLastName.Text = patient.LastName;
+            txtNationalId.Text = patient.NationalId;
+            txtBirthDate.Text = patient.BirthDate;
             txtFatherName.Text = patient.FatherName;
             txtFileNumber.Text = patient.FileNumber;
             txtMobile.Text = patient.Mobile;
@@ -355,6 +361,8 @@ namespace TestApplication
                     Id = _patientId,
                     FirstName = txtFirstName.Text.Trim(),
                     LastName = txtLastName.Text.Trim(),
+                    NationalId = txtNationalId.Text.Trim(),
+                    BirthDate = txtBirthDate.Text.Trim(),
                     FatherName = txtFatherName.Text.Trim(),
                     FileNumber = fileNumber,
                     Mobile = txtMobile.Text.Trim(),
@@ -391,13 +399,6 @@ namespace TestApplication
                 return ValidationError("لطفاً شماره موبایل را وارد کنید.", txtMobile);
             if (!mobile.All(char.IsDigit) || mobile.Length < 10 || mobile.Length > 15)
                 return ValidationError("شماره موبایل باید فقط شامل عدد و بین 10 تا 15 رقم باشد.", txtMobile);
-
-            if (_imageData == null || _imageData.Length == 0)
-            {
-                UiMessage.Warning(this, "لطفاً تصویر بیمار را انتخاب و برش دهید.", "اطلاعات ناقص");
-                btnAttachImage.Focus();
-                return false;
-            }
 
             return true;
         }
