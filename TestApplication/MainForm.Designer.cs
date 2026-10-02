@@ -189,8 +189,8 @@ namespace TestApplication
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;\n            this.RightToLeftLayout = false;
-            this.RightToLeftLayout = true;
+            this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RightToLeftLayout = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "سامانه مدیریت مطب";
             this.pnlHeader.ResumeLayout(false);
