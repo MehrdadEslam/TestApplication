@@ -18,6 +18,11 @@ namespace TestApplication
         private System.Windows.Forms.Label lblSettingsTitle;
         private System.Windows.Forms.Label lblSettingsDescription;
         private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Panel pnlSupportCard;
+        private System.Windows.Forms.PictureBox picSupport;
+        private System.Windows.Forms.Label lblSupportTitle;
+        private System.Windows.Forms.Label lblSupportDescription;
+        private System.Windows.Forms.Button btnSupport;
         private System.Windows.Forms.Label lblFooter;
 
         protected override void Dispose(bool disposing)
@@ -43,12 +48,19 @@ namespace TestApplication
             this.lblSettingsTitle = new System.Windows.Forms.Label();
             this.lblSettingsDescription = new System.Windows.Forms.Label();
             this.btnSettings = new System.Windows.Forms.Button();
+            this.pnlSupportCard = new System.Windows.Forms.Panel();
+            this.picSupport = new System.Windows.Forms.PictureBox();
+            this.lblSupportTitle = new System.Windows.Forms.Label();
+            this.lblSupportDescription = new System.Windows.Forms.Label();
+            this.btnSupport = new System.Windows.Forms.Button();
             this.lblFooter = new System.Windows.Forms.Label();
             this.pnlHeader.SuspendLayout();
             this.pnlPatientsCard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picPatients)).BeginInit();
             this.pnlSettingsCard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picSettings)).BeginInit();
+            this.pnlSupportCard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picSupport)).BeginInit();
             this.SuspendLayout();
 
             this.pnlHeader.BackColor = System.Drawing.Color.FromArgb(15, 23, 42);
@@ -89,83 +101,119 @@ namespace TestApplication
             this.lblHint.Text = "بخش موردنظر را برای ادامه کار انتخاب کنید";
             this.lblHint.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
-            this.pnlPatientsCard.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.pnlPatientsCard.BackColor = System.Drawing.Color.White;
             this.pnlPatientsCard.Controls.Add(this.picPatients);
             this.pnlPatientsCard.Controls.Add(this.lblPatientsTitle);
             this.pnlPatientsCard.Controls.Add(this.lblPatientsDescription);
             this.pnlPatientsCard.Controls.Add(this.btnPatients);
-            this.pnlPatientsCard.Location = new System.Drawing.Point(493, 235);
-            this.pnlPatientsCard.Size = new System.Drawing.Size(360, 320);
+            this.pnlPatientsCard.Location = new System.Drawing.Point(650, 235);
+            this.pnlPatientsCard.Size = new System.Drawing.Size(280, 320);
 
-            this.picPatients.Location = new System.Drawing.Point(104, 18);
-            this.picPatients.Size = new System.Drawing.Size(152, 132);
+            this.picPatients.Location = new System.Drawing.Point(84, 18);
+            this.picPatients.Size = new System.Drawing.Size(112, 112);
             this.picPatients.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picPatients.TabStop = false;
 
-            this.lblPatientsTitle.Font = new System.Drawing.Font("Tahoma", 14F, System.Drawing.FontStyle.Bold);
+            this.lblPatientsTitle.Font = new System.Drawing.Font("Tahoma", 13F, System.Drawing.FontStyle.Bold);
             this.lblPatientsTitle.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42);
-            this.lblPatientsTitle.Location = new System.Drawing.Point(24, 158);
-            this.lblPatientsTitle.Size = new System.Drawing.Size(308, 34);
+            this.lblPatientsTitle.Location = new System.Drawing.Point(20, 148);
+            this.lblPatientsTitle.Size = new System.Drawing.Size(240, 34);
             this.lblPatientsTitle.Text = "لیست بیماران";
             this.lblPatientsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
-            this.lblPatientsDescription.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblPatientsDescription.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.lblPatientsDescription.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
-            this.lblPatientsDescription.Location = new System.Drawing.Point(24, 198);
-            this.lblPatientsDescription.Size = new System.Drawing.Size(308, 42);
+            this.lblPatientsDescription.Location = new System.Drawing.Point(20, 190);
+            this.lblPatientsDescription.Size = new System.Drawing.Size(240, 48);
             this.lblPatientsDescription.Text = "مدیریت پرونده، ایجاد، اصلاح، حذف و جستجوی بیماران";
             this.lblPatientsDescription.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 
             this.btnPatients.BackColor = System.Drawing.Color.FromArgb(37, 99, 235);
             this.btnPatients.FlatAppearance.BorderSize = 0;
             this.btnPatients.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPatients.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.btnPatients.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.btnPatients.ForeColor = System.Drawing.Color.White;
-            this.btnPatients.Location = new System.Drawing.Point(24, 256);
-            this.btnPatients.Size = new System.Drawing.Size(308, 46);
+            this.btnPatients.Location = new System.Drawing.Point(20, 256);
+            this.btnPatients.Size = new System.Drawing.Size(240, 46);
             this.btnPatients.Text = "ورود به لیست بیماران";
             this.btnPatients.UseVisualStyleBackColor = false;
             this.btnPatients.Click += new System.EventHandler(this.btnPatients_Click);
 
-            this.pnlSettingsCard.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.pnlSettingsCard.BackColor = System.Drawing.Color.White;
             this.pnlSettingsCard.Controls.Add(this.picSettings);
             this.pnlSettingsCard.Controls.Add(this.lblSettingsTitle);
             this.pnlSettingsCard.Controls.Add(this.lblSettingsDescription);
             this.pnlSettingsCard.Controls.Add(this.btnSettings);
-            this.pnlSettingsCard.Location = new System.Drawing.Point(107, 235);
-            this.pnlSettingsCard.Size = new System.Drawing.Size(360, 320);
+            this.pnlSettingsCard.Location = new System.Drawing.Point(340, 235);
+            this.pnlSettingsCard.Size = new System.Drawing.Size(280, 320);
 
-            this.picSettings.Location = new System.Drawing.Point(104, 18);
-            this.picSettings.Size = new System.Drawing.Size(152, 132);
+            this.picSettings.Location = new System.Drawing.Point(84, 18);
+            this.picSettings.Size = new System.Drawing.Size(112, 112);
             this.picSettings.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picSettings.TabStop = false;
 
-            this.lblSettingsTitle.Font = new System.Drawing.Font("Tahoma", 14F, System.Drawing.FontStyle.Bold);
+            this.lblSettingsTitle.Font = new System.Drawing.Font("Tahoma", 13F, System.Drawing.FontStyle.Bold);
             this.lblSettingsTitle.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42);
-            this.lblSettingsTitle.Location = new System.Drawing.Point(24, 158);
-            this.lblSettingsTitle.Size = new System.Drawing.Size(308, 34);
+            this.lblSettingsTitle.Location = new System.Drawing.Point(20, 148);
+            this.lblSettingsTitle.Size = new System.Drawing.Size(240, 34);
             this.lblSettingsTitle.Text = "تنظیمات نرم افزار";
             this.lblSettingsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
-            this.lblSettingsDescription.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblSettingsDescription.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.lblSettingsDescription.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
-            this.lblSettingsDescription.Location = new System.Drawing.Point(24, 198);
-            this.lblSettingsDescription.Size = new System.Drawing.Size(308, 42);
+            this.lblSettingsDescription.Location = new System.Drawing.Point(20, 190);
+            this.lblSettingsDescription.Size = new System.Drawing.Size(240, 48);
             this.lblSettingsDescription.Text = "تنظیمات عمومی برنامه، اطلاعات سیستم و دیتابیس";
             this.lblSettingsDescription.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 
             this.btnSettings.BackColor = System.Drawing.Color.FromArgb(15, 23, 42);
             this.btnSettings.FlatAppearance.BorderSize = 0;
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSettings.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.btnSettings.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.btnSettings.ForeColor = System.Drawing.Color.White;
-            this.btnSettings.Location = new System.Drawing.Point(24, 256);
-            this.btnSettings.Size = new System.Drawing.Size(308, 46);
+            this.btnSettings.Location = new System.Drawing.Point(20, 256);
+            this.btnSettings.Size = new System.Drawing.Size(240, 46);
             this.btnSettings.Text = "ورود به تنظیمات";
             this.btnSettings.UseVisualStyleBackColor = false;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+
+            this.pnlSupportCard.BackColor = System.Drawing.Color.White;
+            this.pnlSupportCard.Controls.Add(this.picSupport);
+            this.pnlSupportCard.Controls.Add(this.lblSupportTitle);
+            this.pnlSupportCard.Controls.Add(this.lblSupportDescription);
+            this.pnlSupportCard.Controls.Add(this.btnSupport);
+            this.pnlSupportCard.Location = new System.Drawing.Point(30, 235);
+            this.pnlSupportCard.Size = new System.Drawing.Size(280, 320);
+
+            this.picSupport.Location = new System.Drawing.Point(84, 18);
+            this.picSupport.Size = new System.Drawing.Size(112, 112);
+            this.picSupport.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picSupport.TabStop = false;
+
+            this.lblSupportTitle.Font = new System.Drawing.Font("Tahoma", 13F, System.Drawing.FontStyle.Bold);
+            this.lblSupportTitle.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42);
+            this.lblSupportTitle.Location = new System.Drawing.Point(20, 148);
+            this.lblSupportTitle.Size = new System.Drawing.Size(240, 34);
+            this.lblSupportTitle.Text = "پشتیبانی سیستم";
+            this.lblSupportTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+
+            this.lblSupportDescription.Font = new System.Drawing.Font("Tahoma", 8.5F);
+            this.lblSupportDescription.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
+            this.lblSupportDescription.Location = new System.Drawing.Point(20, 190);
+            this.lblSupportDescription.Size = new System.Drawing.Size(240, 48);
+            this.lblSupportDescription.Text = "مشاهده IP و وضعیت Firewall و اعمال تغییرات با تأیید شما";
+            this.lblSupportDescription.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+
+            this.btnSupport.BackColor = System.Drawing.Color.FromArgb(14, 165, 233);
+            this.btnSupport.FlatAppearance.BorderSize = 0;
+            this.btnSupport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSupport.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnSupport.ForeColor = System.Drawing.Color.White;
+            this.btnSupport.Location = new System.Drawing.Point(20, 256);
+            this.btnSupport.Size = new System.Drawing.Size(240, 46);
+            this.btnSupport.Text = "ورود به پشتیبانی";
+            this.btnSupport.UseVisualStyleBackColor = false;
+            this.btnSupport.Click += new System.EventHandler(this.btnSupport_Click);
 
             this.lblFooter.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.lblFooter.Font = new System.Drawing.Font("Tahoma", 8.5F);
@@ -180,6 +228,7 @@ namespace TestApplication
             this.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
             this.ClientSize = new System.Drawing.Size(960, 640);
             this.Controls.Add(this.lblFooter);
+            this.Controls.Add(this.pnlSupportCard);
             this.Controls.Add(this.pnlSettingsCard);
             this.Controls.Add(this.pnlPatientsCard);
             this.Controls.Add(this.lblHint);
@@ -198,6 +247,8 @@ namespace TestApplication
             ((System.ComponentModel.ISupportInitialize)(this.picPatients)).EndInit();
             this.pnlSettingsCard.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picSettings)).EndInit();
+            this.pnlSupportCard.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.picSupport)).EndInit();
             this.ResumeLayout(false);
         }
     }
