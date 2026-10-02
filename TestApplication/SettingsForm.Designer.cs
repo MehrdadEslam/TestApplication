@@ -97,7 +97,7 @@ namespace TestApplication
             this.txtDatabasePath.Location = new System.Drawing.Point(24, 128);
             this.txtDatabasePath.ReadOnly = true;
             this.txtDatabasePath.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.txtDatabasePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtDatabasePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.txtDatabasePath.Size = new System.Drawing.Size(668, 26);
 
             this.lblDatabaseStatus.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
