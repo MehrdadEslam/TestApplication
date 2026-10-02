@@ -157,6 +157,7 @@ namespace TestApplication
             Text = "ایجاد پرونده بیمار";
             lblTitle.Text = "ایجاد پرونده بیمار";
             lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
+            txtFileNumber.Text = _database.GetNextFileNumber();
             pnlHeader.Invalidate();
         }
 
