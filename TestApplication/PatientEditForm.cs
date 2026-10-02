@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -43,8 +44,8 @@ namespace TestApplication
         private void PrepareNewPatient()
         {
             Text = "ایجاد پرونده بیمار";
-            lblTitle.Text = "ایجاد پرونده جدید";
-            lblSubtitle.Text = "اطلاعات بیمار را تکمیل و ذخیره کنید";
+            lblTitle.Text = "ایجاد پرونده بیمار";
+            lblSubtitle.Text = "اطلاعات موردنیاز پرونده را وارد و ذخیره نمایید";
             txtFirstName.Focus();
         }
 
@@ -62,7 +63,7 @@ namespace TestApplication
 
             Text = "اصلاح پرونده بیمار";
             lblTitle.Text = "اصلاح پرونده بیمار";
-            lblSubtitle.Text = "اطلاعات بیمار را ویرایش و دوباره ذخیره کنید";
+            lblSubtitle.Text = "اطلاعات پرونده را اصلاح و سپس ذخیره نمایید";
 
             txtFirstName.Text = patient.FirstName;
             txtLastName.Text = patient.LastName;
@@ -87,19 +88,28 @@ namespace TestApplication
 
                 try
                 {
-                    byte[] bytes = File.ReadAllBytes(dialog.FileName);
-                    using (MemoryStream stream = new MemoryStream(bytes))
-                    using (Image test = Image.FromStream(stream)) { }
+                    using (Image source = Image.FromFile(dialog.FileName))
+                    using (CropImageForm cropForm = new CropImageForm(source))
+                    {
+                        if (cropForm.ShowDialog(this) != DialogResult.OK || cropForm.CroppedImage == null)
+                            return;
 
-                    _imageData = bytes;
-                    _imageFileName = Path.GetFileName(dialog.FileName);
+                        using (Bitmap cropped = new Bitmap(cropForm.CroppedImage))
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            cropped.Save(stream, ImageFormat.Png);
+                            _imageData = stream.ToArray();
+                        }
+                    }
+
+                    _imageFileName = Path.GetFileNameWithoutExtension(dialog.FileName) + "_cropped.png";
                     txtImagePath.Text = _imageFileName;
                     ShowImage(_imageData);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    MessageBox.Show("فایل انتخاب‌شده تصویر معتبر نیست.", "تصویر بیمار",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("پردازش تصویر انتخاب‌شده انجام نشد.\n" + ex.Message,
+                        "تصویر بیمار", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -164,7 +174,7 @@ namespace TestApplication
 
             if (_imageData == null || _imageData.Length == 0)
             {
-                MessageBox.Show("لطفاً تصویر بیمار را انتخاب کنید.", "اطلاعات ناقص",
+                MessageBox.Show("لطفاً تصویر بیمار را انتخاب و برش دهید.", "اطلاعات ناقص",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 btnAttachImage.Focus();
                 return false;
