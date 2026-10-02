@@ -143,8 +143,7 @@ namespace TestApplication
 
             if (selected.Width < 10 || selected.Height < 10)
             {
-                MessageBox.Show("لطفاً با ماوس محدوده موردنظر برای برش تصویر را انتخاب کنید.",
-                    "برش تصویر", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                UiMessage.Info(this, "لطفاً با ماوس محدوده موردنظر برای برش تصویر را انتخاب کنید.", "برش تصویر");
                 return;
             }
 
