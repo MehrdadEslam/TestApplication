@@ -67,15 +67,30 @@ namespace TestApplication
 
             foreach (TextBox input in editableInputs)
             {
-                input.Enter += Input_EnterOrLeave;
-                input.Leave += Input_EnterOrLeave;
+                input.AutoSize = false;
+                input.BorderStyle = BorderStyle.FixedSingle;
+                input.Enter += Input_Enter;
+                input.Leave += Input_Leave;
             }
 
             pnlForm.Paint += pnlForm_Paint;
         }
 
-        private void Input_EnterOrLeave(object sender, EventArgs e)
+        private void Input_Enter(object sender, EventArgs e)
         {
+            TextBox input = sender as TextBox;
+            if (input != null)
+                input.BorderStyle = BorderStyle.None;
+
+            pnlForm.Invalidate();
+        }
+
+        private void Input_Leave(object sender, EventArgs e)
+        {
+            TextBox input = sender as TextBox;
+            if (input != null)
+                input.BorderStyle = BorderStyle.FixedSingle;
+
             pnlForm.Invalidate();
         }
 
