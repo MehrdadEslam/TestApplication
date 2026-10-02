@@ -160,7 +160,8 @@ namespace TestApplication
             this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.txtSearch.Font = new System.Drawing.Font("Tahoma", 11F);
-            this.txtSearch.Location = new System.Drawing.Point(138, 38);\n            this.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.txtSearch.Location = new System.Drawing.Point(138, 38);
+            this.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtSearch.Size = new System.Drawing.Size(487, 30);
             this.txtSearch.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
