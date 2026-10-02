@@ -10,6 +10,8 @@ namespace TestApplication
         private System.Windows.Forms.Panel pnlForm;
         private System.Windows.Forms.Label lblFirstName;
         private System.Windows.Forms.Label lblLastName;
+        private System.Windows.Forms.Label lblNationalId;
+        private System.Windows.Forms.Label lblBirthDate;
         private System.Windows.Forms.Label lblFatherName;
         private System.Windows.Forms.Label lblFileNumber;
         private System.Windows.Forms.Label lblMobile;
@@ -19,6 +21,8 @@ namespace TestApplication
         private System.Windows.Forms.Label lblRequired4;
         private System.Windows.Forms.TextBox txtFirstName;
         private System.Windows.Forms.TextBox txtLastName;
+        private System.Windows.Forms.TextBox txtNationalId;
+        private System.Windows.Forms.TextBox txtBirthDate;
         private System.Windows.Forms.TextBox txtFatherName;
         private System.Windows.Forms.TextBox txtFileNumber;
         private System.Windows.Forms.TextBox txtMobile;
@@ -46,6 +50,8 @@ namespace TestApplication
             this.pnlForm = new System.Windows.Forms.Panel();
             this.lblFirstName = new System.Windows.Forms.Label();
             this.lblLastName = new System.Windows.Forms.Label();
+            this.lblNationalId = new System.Windows.Forms.Label();
+            this.lblBirthDate = new System.Windows.Forms.Label();
             this.lblFatherName = new System.Windows.Forms.Label();
             this.lblFileNumber = new System.Windows.Forms.Label();
             this.lblMobile = new System.Windows.Forms.Label();
@@ -55,6 +61,8 @@ namespace TestApplication
             this.lblRequired4 = new System.Windows.Forms.Label();
             this.txtFirstName = new System.Windows.Forms.TextBox();
             this.txtLastName = new System.Windows.Forms.TextBox();
+            this.txtNationalId = new System.Windows.Forms.TextBox();
+            this.txtBirthDate = new System.Windows.Forms.TextBox();
             this.txtFatherName = new System.Windows.Forms.TextBox();
             this.txtFileNumber = new System.Windows.Forms.TextBox();
             this.txtMobile = new System.Windows.Forms.TextBox();
@@ -116,11 +124,15 @@ namespace TestApplication
             this.pnlForm.Controls.Add(this.txtMobile);
             this.pnlForm.Controls.Add(this.txtFileNumber);
             this.pnlForm.Controls.Add(this.txtFatherName);
+            this.pnlForm.Controls.Add(this.txtBirthDate);
+            this.pnlForm.Controls.Add(this.txtNationalId);
             this.pnlForm.Controls.Add(this.txtLastName);
             this.pnlForm.Controls.Add(this.txtFirstName);
             this.pnlForm.Controls.Add(this.lblMobile);
             this.pnlForm.Controls.Add(this.lblFileNumber);
             this.pnlForm.Controls.Add(this.lblFatherName);
+            this.pnlForm.Controls.Add(this.lblBirthDate);
+            this.pnlForm.Controls.Add(this.lblNationalId);
             this.pnlForm.Controls.Add(this.lblLastName);
             this.pnlForm.Controls.Add(this.lblFirstName);
             this.pnlForm.Location = new System.Drawing.Point(24, 100);
@@ -128,63 +140,77 @@ namespace TestApplication
 
             this.lblFirstName.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
             this.lblFirstName.ForeColor = System.Drawing.Color.FromArgb(30, 41, 59);
-            this.lblFirstName.Location = new System.Drawing.Point(720, 92);
+            this.lblFirstName.Location = new System.Drawing.Point(720, 78);
             this.lblFirstName.Size = new System.Drawing.Size(115, 28);
             this.lblFirstName.Text = "نام :";
             this.lblFirstName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.lblLastName.Font = this.lblFirstName.Font;
             this.lblLastName.ForeColor = this.lblFirstName.ForeColor;
-            this.lblLastName.Location = new System.Drawing.Point(690, 148);
+            this.lblLastName.Location = new System.Drawing.Point(690, 128);
             this.lblLastName.Size = new System.Drawing.Size(145, 28);
             this.lblLastName.Text = "نام خانوادگی :";
             this.lblLastName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
+            this.lblNationalId.Font = this.lblFirstName.Font;
+            this.lblNationalId.ForeColor = this.lblFirstName.ForeColor;
+            this.lblNationalId.Location = new System.Drawing.Point(690, 178);
+            this.lblNationalId.Size = new System.Drawing.Size(145, 28);
+            this.lblNationalId.Text = "کد ملی :";
+            this.lblNationalId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+
+            this.lblBirthDate.Font = this.lblFirstName.Font;
+            this.lblBirthDate.ForeColor = this.lblFirstName.ForeColor;
+            this.lblBirthDate.Location = new System.Drawing.Point(690, 228);
+            this.lblBirthDate.Size = new System.Drawing.Size(145, 28);
+            this.lblBirthDate.Text = "تاریخ تولد :";
+            this.lblBirthDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+
             this.lblFatherName.Font = this.lblFirstName.Font;
             this.lblFatherName.ForeColor = this.lblFirstName.ForeColor;
-            this.lblFatherName.Location = new System.Drawing.Point(690, 260);
+            this.lblFatherName.Location = new System.Drawing.Point(690, 328);
             this.lblFatherName.Size = new System.Drawing.Size(145, 28);
             this.lblFatherName.Text = "نام پدر :";
             this.lblFatherName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.lblFileNumber.Font = this.lblFirstName.Font;
             this.lblFileNumber.ForeColor = this.lblFirstName.ForeColor;
-            this.lblFileNumber.Location = new System.Drawing.Point(690, 36);
+            this.lblFileNumber.Location = new System.Drawing.Point(690, 28);
             this.lblFileNumber.Size = new System.Drawing.Size(145, 28);
             this.lblFileNumber.Text = "شماره پرونده :";
             this.lblFileNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.lblMobile.Font = this.lblFirstName.Font;
             this.lblMobile.ForeColor = this.lblFirstName.ForeColor;
-            this.lblMobile.Location = new System.Drawing.Point(690, 204);
+            this.lblMobile.Location = new System.Drawing.Point(690, 278);
             this.lblMobile.Size = new System.Drawing.Size(145, 28);
             this.lblMobile.Text = "شماره موبایل :";
             this.lblMobile.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.lblRequired1.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
             this.lblRequired1.ForeColor = System.Drawing.Color.FromArgb(220, 38, 38);
-            this.lblRequired1.Location = new System.Drawing.Point(840, 92);
+            this.lblRequired1.Location = new System.Drawing.Point(840, 78);
             this.lblRequired1.Size = new System.Drawing.Size(20, 28);
             this.lblRequired1.Text = "*";
             this.lblRequired1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
             this.lblRequired2.Font = this.lblRequired1.Font;
             this.lblRequired2.ForeColor = this.lblRequired1.ForeColor;
-            this.lblRequired2.Location = new System.Drawing.Point(840, 148);
+            this.lblRequired2.Location = new System.Drawing.Point(840, 128);
             this.lblRequired2.Size = new System.Drawing.Size(20, 28);
             this.lblRequired2.Text = "*";
             this.lblRequired2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
             this.lblRequired3.Font = this.lblRequired1.Font;
             this.lblRequired3.ForeColor = this.lblRequired1.ForeColor;
-            this.lblRequired3.Location = new System.Drawing.Point(840, 36);
+            this.lblRequired3.Location = new System.Drawing.Point(840, 28);
             this.lblRequired3.Size = new System.Drawing.Size(20, 28);
             this.lblRequired3.Text = "*";
             this.lblRequired3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
             this.lblRequired4.Font = this.lblRequired1.Font;
             this.lblRequired4.ForeColor = this.lblRequired1.ForeColor;
-            this.lblRequired4.Location = new System.Drawing.Point(840, 204);
+            this.lblRequired4.Location = new System.Drawing.Point(840, 278);
             this.lblRequired4.Size = new System.Drawing.Size(20, 28);
             this.lblRequired4.Text = "*";
             this.lblRequired4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -192,7 +218,7 @@ namespace TestApplication
             this.txtFirstName.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtFirstName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtFirstName.TabIndex = 1;
-            this.txtFirstName.Location = new System.Drawing.Point(398, 92);
+            this.txtFirstName.Location = new System.Drawing.Point(398, 78);
             this.txtFirstName.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtFirstName.Size = new System.Drawing.Size(286, 29);
             this.txtFirstName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -200,15 +226,33 @@ namespace TestApplication
             this.txtLastName.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtLastName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtLastName.TabIndex = 2;
-            this.txtLastName.Location = new System.Drawing.Point(398, 148);
+            this.txtLastName.Location = new System.Drawing.Point(398, 128);
             this.txtLastName.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtLastName.Size = new System.Drawing.Size(286, 29);
             this.txtLastName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
+            this.txtNationalId.Font = new System.Drawing.Font("Tahoma", 10.5F);
+            this.txtNationalId.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtNationalId.TabIndex = 3;
+            this.txtNationalId.Location = new System.Drawing.Point(398, 178);
+            this.txtNationalId.MaxLength = 20;
+            this.txtNationalId.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.txtNationalId.Size = new System.Drawing.Size(286, 29);
+            this.txtNationalId.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+
+            this.txtBirthDate.Font = new System.Drawing.Font("Tahoma", 10.5F);
+            this.txtBirthDate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBirthDate.TabIndex = 4;
+            this.txtBirthDate.Location = new System.Drawing.Point(398, 228);
+            this.txtBirthDate.MaxLength = 20;
+            this.txtBirthDate.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.txtBirthDate.Size = new System.Drawing.Size(286, 29);
+            this.txtBirthDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+
             this.txtFatherName.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtFatherName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtFatherName.TabIndex = 4;
-            this.txtFatherName.Location = new System.Drawing.Point(398, 260);
+            this.txtFatherName.TabIndex = 6;
+            this.txtFatherName.Location = new System.Drawing.Point(398, 328);
             this.txtFatherName.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtFatherName.Size = new System.Drawing.Size(286, 29);
             this.txtFatherName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
@@ -216,15 +260,15 @@ namespace TestApplication
             this.txtFileNumber.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtFileNumber.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtFileNumber.TabIndex = 0;
-            this.txtFileNumber.Location = new System.Drawing.Point(398, 36);
+            this.txtFileNumber.Location = new System.Drawing.Point(398, 28);
             this.txtFileNumber.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtFileNumber.Size = new System.Drawing.Size(286, 29);
             this.txtFileNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
             this.txtMobile.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtMobile.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtMobile.TabIndex = 3;
-            this.txtMobile.Location = new System.Drawing.Point(398, 204);
+            this.txtMobile.TabIndex = 5;
+            this.txtMobile.Location = new System.Drawing.Point(398, 278);
             this.txtMobile.MaxLength = 15;
             this.txtMobile.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtMobile.Size = new System.Drawing.Size(286, 29);
@@ -241,7 +285,7 @@ namespace TestApplication
             this.lblImageHint.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
             this.lblImageHint.Location = new System.Drawing.Point(42, 46);
             this.lblImageHint.Size = new System.Drawing.Size(300, 22);
-            this.lblImageHint.Text = "تصویر جدید انتخاب کنید یا تصویر فعلی را دوباره Crop کنید";
+            this.lblImageHint.Text = "تصویر اختیاری است؛ می‌توانید تصویر جدید انتخاب یا تصویر فعلی را Crop کنید";
             this.lblImageHint.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
             this.picPatient.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
@@ -254,6 +298,7 @@ namespace TestApplication
             this.txtImagePath.Font = new System.Drawing.Font("Tahoma", 8F);
             this.txtImagePath.Location = new System.Drawing.Point(72, 274);
             this.txtImagePath.ReadOnly = true;
+            this.txtImagePath.TabStop = false;
             this.txtImagePath.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtImagePath.Size = new System.Drawing.Size(240, 24);
             this.txtImagePath.Text = "تصویری انتخاب نشده است";
@@ -267,6 +312,7 @@ namespace TestApplication
             this.btnAttachImage.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnAttachImage.Location = new System.Drawing.Point(194, 312);
             this.btnAttachImage.Size = new System.Drawing.Size(118, 48);
+            this.btnAttachImage.TabIndex = 7;
             this.btnAttachImage.Text = "انتخاب جدید";
             this.btnAttachImage.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnAttachImage.UseVisualStyleBackColor = false;
@@ -281,6 +327,7 @@ namespace TestApplication
             this.btnCropCurrent.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnCropCurrent.Location = new System.Drawing.Point(72, 312);
             this.btnCropCurrent.Size = new System.Drawing.Size(116, 48);
+            this.btnCropCurrent.TabIndex = 8;
             this.btnCropCurrent.Text = "Crop فعلی";
             this.btnCropCurrent.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCropCurrent.UseVisualStyleBackColor = false;
@@ -294,6 +341,7 @@ namespace TestApplication
             this.btnSave.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnSave.Location = new System.Drawing.Point(690, 540);
             this.btnSave.Size = new System.Drawing.Size(210, 52);
+            this.btnSave.TabIndex = 9;
             this.btnSave.Text = "  ذخیره اطلاعات";
             this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSave.UseVisualStyleBackColor = false;
@@ -307,6 +355,7 @@ namespace TestApplication
             this.btnCancel.ForeColor = System.Drawing.Color.FromArgb(51, 65, 85);
             this.btnCancel.Location = new System.Drawing.Point(535, 540);
             this.btnCancel.Size = new System.Drawing.Size(140, 52);
+            this.btnCancel.TabIndex = 10;
             this.btnCancel.Text = "انصراف";
             this.btnCancel.UseVisualStyleBackColor = false;
 
