@@ -9,6 +9,7 @@ namespace TestApplication
     {
         private Image _patientsMenuImage;
         private Image _settingsMenuImage;
+        private Image _supportMenuImage;
 
         public MainForm()
         {
@@ -44,6 +45,8 @@ namespace TestApplication
                         _settingsMenuImage = new Bitmap(image);
                     picSettings.Image = _settingsMenuImage;
                 }
+                _supportMenuImage = UiIcons.CreateActionIcon("⚙", Color.FromArgb(14, 165, 233), 112);
+                picSupport.Image = _supportMenuImage;
             }
             catch
             {
@@ -62,10 +65,17 @@ namespace TestApplication
                 settingsForm.ShowDialog(this);
         }
 
+        private void btnSupport_Click(object sender, EventArgs e)
+        {
+            using (SupportForm supportForm = new SupportForm())
+                supportForm.ShowDialog(this);
+        }
+
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             if (_patientsMenuImage != null) _patientsMenuImage.Dispose();
             if (_settingsMenuImage != null) _settingsMenuImage.Dispose();
+            if (_supportMenuImage != null) _supportMenuImage.Dispose();
             base.OnFormClosed(e);
         }
     }
