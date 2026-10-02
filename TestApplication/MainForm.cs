@@ -28,6 +28,9 @@ namespace TestApplication
         {
             try
             {
+                _supportMenuImage = UiIcons.CreateActionIcon("⚙", Color.FromArgb(14, 165, 233), 112);
+                picSupport.Image = _supportMenuImage;
+
                 string assets = Path.Combine(Application.StartupPath, "Assets");
                 string patientsPath = Path.Combine(assets, "PatientsMenu.png");
                 string settingsPath = Path.Combine(assets, "SettingsMenu.png");
@@ -45,8 +48,6 @@ namespace TestApplication
                         _settingsMenuImage = new Bitmap(image);
                     picSettings.Image = _settingsMenuImage;
                 }
-                _supportMenuImage = UiIcons.CreateActionIcon("⚙", Color.FromArgb(14, 165, 233), 112);
-                picSupport.Image = _supportMenuImage;
             }
             catch
             {
