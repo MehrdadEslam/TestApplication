@@ -27,6 +27,8 @@ namespace TestApplication
                 LoadPatient();
             else
                 PrepareNewPatient();
+
+            UpdateImageButtons();
         }
 
         private void ApplyApplicationIcon()
@@ -39,13 +41,14 @@ namespace TestApplication
         {
             btnSave.Image = UiIcons.SaveIcon();
             btnAttachImage.Image = UiIcons.ImageIcon();
+            btnCropCurrent.Image = UiIcons.EditIcon();
         }
 
         private void PrepareNewPatient()
         {
             Text = "ایجاد پرونده بیمار";
             lblTitle.Text = "ایجاد پرونده بیمار";
-            lblSubtitle.Text = "اطلاعات موردنیاز پرونده را وارد و ذخیره نمایید";
+            lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
             txtFirstName.Focus();
         }
 
@@ -54,8 +57,7 @@ namespace TestApplication
             PatientRecord patient = _database.GetById(_patientId);
             if (patient == null)
             {
-                MessageBox.Show("پرونده انتخاب‌شده پیدا نشد.", "پرونده بیمار",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                UiMessage.Warning(this, "پرونده انتخاب‌شده پیدا نشد.", "پرونده بیمار");
                 DialogResult = DialogResult.Cancel;
                 Close();
                 return;
@@ -63,16 +65,18 @@ namespace TestApplication
 
             Text = "اصلاح پرونده بیمار";
             lblTitle.Text = "اصلاح پرونده بیمار";
-            lblSubtitle.Text = "اطلاعات پرونده را اصلاح و سپس ذخیره نمایید";
+            lblSubtitle.Text = "اطلاعات پرونده و تصویر بیمار را می‌توانید اصلاح کنید.";
 
             txtFirstName.Text = patient.FirstName;
             txtLastName.Text = patient.LastName;
+            txtFatherName.Text = patient.FatherName;
             txtFileNumber.Text = patient.FileNumber;
             txtMobile.Text = patient.Mobile;
             _imageData = patient.ImageData;
             _imageFileName = patient.ImageFileName ?? string.Empty;
             txtImagePath.Text = string.IsNullOrWhiteSpace(_imageFileName) ? "بدون تصویر" : _imageFileName;
             ShowImage(_imageData);
+            UpdateImageButtons();
         }
 
         private void btnAttachImage_Click(object sender, EventArgs e)
@@ -83,35 +87,79 @@ namespace TestApplication
                 dialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All Files|*.*";
                 dialog.Multiselect = false;
 
-                if (dialog.ShowDialog() != DialogResult.OK)
+                if (dialog.ShowDialog(this) != DialogResult.OK)
                     return;
 
                 try
                 {
                     using (Image source = Image.FromFile(dialog.FileName))
-                    using (CropImageForm cropForm = new CropImageForm(source))
                     {
-                        if (cropForm.ShowDialog(this) != DialogResult.OK || cropForm.CroppedImage == null)
-                            return;
-
-                        using (Bitmap cropped = new Bitmap(cropForm.CroppedImage))
-                        using (MemoryStream stream = new MemoryStream())
-                        {
-                            cropped.Save(stream, ImageFormat.Png);
-                            _imageData = stream.ToArray();
-                        }
+                        string outputName = Path.GetFileNameWithoutExtension(dialog.FileName) + "_cropped.png";
+                        CropAndApplyImage(source, outputName);
                     }
-
-                    _imageFileName = Path.GetFileNameWithoutExtension(dialog.FileName) + "_cropped.png";
-                    txtImagePath.Text = _imageFileName;
-                    ShowImage(_imageData);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("پردازش تصویر انتخاب‌شده انجام نشد.\n" + ex.Message,
-                        "تصویر بیمار", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    UiMessage.Warning(this, "پردازش تصویر انتخاب‌شده انجام نشد.\n" + ex.Message, "تصویر بیمار");
                 }
             }
+        }
+
+        private void btnCropCurrent_Click(object sender, EventArgs e)
+        {
+            if (_imageData == null || _imageData.Length == 0)
+            {
+                UiMessage.Info(this, "برای این بیمار هنوز تصویری ثبت نشده است.", "ویرایش تصویر");
+                return;
+            }
+
+            try
+            {
+                using (MemoryStream stream = new MemoryStream(_imageData))
+                using (Image source = Image.FromStream(stream))
+                using (Bitmap safeCopy = new Bitmap(source))
+                {
+                    string outputName = string.IsNullOrWhiteSpace(_imageFileName)
+                        ? "patient_cropped.png"
+                        : Path.GetFileNameWithoutExtension(_imageFileName) + "_edit.png";
+
+                    CropAndApplyImage(safeCopy, outputName);
+                }
+            }
+            catch (Exception ex)
+            {
+                UiMessage.Warning(this, "ویرایش تصویر فعلی انجام نشد.\n" + ex.Message, "ویرایش تصویر");
+            }
+        }
+
+        private void CropAndApplyImage(Image source, string outputName)
+        {
+            using (CropImageForm cropForm = new CropImageForm(source))
+            {
+                if (cropForm.ShowDialog(this) != DialogResult.OK || cropForm.CroppedImage == null)
+                    return;
+
+                using (Bitmap cropped = new Bitmap(cropForm.CroppedImage))
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    cropped.Save(stream, ImageFormat.Png);
+                    _imageData = stream.ToArray();
+                }
+            }
+
+            _imageFileName = outputName;
+            txtImagePath.Text = _imageFileName;
+            ShowImage(_imageData);
+            UpdateImageButtons();
+        }
+
+        private void UpdateImageButtons()
+        {
+            bool hasImage = _imageData != null && _imageData.Length > 0;
+            btnCropCurrent.Enabled = hasImage;
+            btnCropCurrent.BackColor = hasImage
+                ? Color.FromArgb(239, 246, 255)
+                : Color.FromArgb(248, 250, 252);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -122,8 +170,7 @@ namespace TestApplication
             string fileNumber = txtFileNumber.Text.Trim();
             if (_database.FileNumberExists(fileNumber, _patientId))
             {
-                MessageBox.Show("این شماره پرونده قبلاً برای بیمار دیگری ثبت شده است.",
-                    "شماره پرونده تکراری", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                UiMessage.Warning(this, "این شماره پرونده قبلاً برای بیمار دیگری ثبت شده است.", "شماره پرونده تکراری");
                 txtFileNumber.Focus();
                 return;
             }
@@ -135,6 +182,7 @@ namespace TestApplication
                     Id = _patientId,
                     FirstName = txtFirstName.Text.Trim(),
                     LastName = txtLastName.Text.Trim(),
+                    FatherName = txtFatherName.Text.Trim(),
                     FileNumber = fileNumber,
                     Mobile = txtMobile.Text.Trim(),
                     ImageData = _imageData,
@@ -143,17 +191,16 @@ namespace TestApplication
 
                 _database.Save(patient);
 
-                MessageBox.Show(
+                UiMessage.Info(this,
                     _patientId == 0 ? "پرونده بیمار با موفقیت ایجاد شد." : "تغییرات پرونده با موفقیت ذخیره شد.",
-                    "ذخیره اطلاعات", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    "ذخیره اطلاعات");
 
                 DialogResult = DialogResult.OK;
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("ذخیره اطلاعات انجام نشد:\n" + ex.Message,
-                    "خطای دیتابیس", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UiMessage.Error(this, "ذخیره اطلاعات انجام نشد:\n" + ex.Message, "خطای دیتابیس");
             }
         }
 
@@ -174,8 +221,7 @@ namespace TestApplication
 
             if (_imageData == null || _imageData.Length == 0)
             {
-                MessageBox.Show("لطفاً تصویر بیمار را انتخاب و برش دهید.", "اطلاعات ناقص",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                UiMessage.Warning(this, "لطفاً تصویر بیمار را انتخاب و برش دهید.", "اطلاعات ناقص");
                 btnAttachImage.Focus();
                 return false;
             }
@@ -185,7 +231,7 @@ namespace TestApplication
 
         private bool ValidationError(string message, Control control)
         {
-            MessageBox.Show(message, "اطلاعات ناقص", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            UiMessage.Warning(this, message, "اطلاعات ناقص");
             control.Focus();
             return false;
         }
