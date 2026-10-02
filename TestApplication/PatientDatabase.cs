@@ -151,6 +151,34 @@ namespace TestApplication
             }
         }
 
+        public string GetNextFileNumber()
+        {
+            long highestNumber = 0;
+
+            using (SQLiteConnection connection = OpenConnection())
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT FileNumber FROM Patients;";
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        long number;
+                        string value = Convert.ToString(reader["FileNumber"]).Trim();
+
+                        if (long.TryParse(value, out number) && number > highestNumber)
+                            highestNumber = number;
+                    }
+                }
+            }
+
+            if (highestNumber == long.MaxValue)
+                return highestNumber.ToString();
+
+            return (highestNumber + 1).ToString();
+        }
+
         public bool FileNumberExists(string fileNumber, long excludeId)
         {
             using (SQLiteConnection connection = OpenConnection())
