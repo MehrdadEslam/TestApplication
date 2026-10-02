@@ -20,6 +20,7 @@ namespace TestApplication
             _patientId = patientId;
 
             InitializeComponent();
+            ConfigurePersianLayout();
             ApplyApplicationIcon();
             ApplyButtonIcons();
 
@@ -29,6 +30,31 @@ namespace TestApplication
                 PrepareNewPatient();
 
             UpdateImageButtons();
+        }
+
+        private void ConfigurePersianLayout()
+        {
+            // In WinForms RTL mode, Left alignment is mirrored and is displayed
+            // physically on the right side of a TextBox.
+            TextBox[] inputs =
+            {
+                txtFirstName, txtLastName, txtFatherName,
+                txtFileNumber, txtMobile, txtImagePath
+            };
+
+            foreach (TextBox input in inputs)
+            {
+                input.RightToLeft = RightToLeft.Yes;
+                input.TextAlign = HorizontalAlignment.Left;
+            }
+
+            // Keep the Windows title bar standard while making the blue application
+            // header explicitly Persian/RTL and always visible above its panel.
+            pnlHeader.RightToLeft = RightToLeft.No;
+            lblTitle.RightToLeft = RightToLeft.Yes;
+            lblSubtitle.RightToLeft = RightToLeft.Yes;
+            lblTitle.BringToFront();
+            lblSubtitle.BringToFront();
         }
 
         private void ApplyApplicationIcon()
