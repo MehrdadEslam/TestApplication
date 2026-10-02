@@ -52,8 +52,19 @@ namespace TestApplication
             // Keep the Windows title bar standard while making the blue application
             // header explicitly Persian/RTL and always visible above its panel.
             pnlHeader.RightToLeft = RightToLeft.No;
-            lblTitle.RightToLeft = RightToLeft.Yes;
-            lblSubtitle.RightToLeft = RightToLeft.Yes;
+
+            // Header labels use explicit physical right alignment. Do not rely on
+            // RTL mirroring here because it can place the text outside the visible label.
+            lblTitle.RightToLeft = RightToLeft.No;
+            lblTitle.TextAlign = ContentAlignment.MiddleRight;
+            lblTitle.ForeColor = Color.White;
+            lblTitle.Visible = true;
+
+            lblSubtitle.RightToLeft = RightToLeft.No;
+            lblSubtitle.TextAlign = ContentAlignment.MiddleRight;
+            lblSubtitle.ForeColor = Color.FromArgb(219, 234, 254);
+            lblSubtitle.Visible = true;
+
             lblTitle.BringToFront();
             lblSubtitle.BringToFront();
         }
