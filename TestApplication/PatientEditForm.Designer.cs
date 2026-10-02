@@ -87,20 +87,20 @@ namespace TestApplication
             this.lblTitle.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.White;
             this.lblTitle.Location = new System.Drawing.Point(24, 8);
-            this.lblTitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblTitle.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblTitle.Size = new System.Drawing.Size(876, 32);
             this.lblTitle.Text = "ایجاد پرونده بیمار";
-            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.lblSubtitle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.lblSubtitle.BackColor = System.Drawing.Color.Transparent;
             this.lblSubtitle.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(219, 234, 254);
             this.lblSubtitle.Location = new System.Drawing.Point(24, 42);
-            this.lblSubtitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblSubtitle.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblSubtitle.Size = new System.Drawing.Size(876, 22);
             this.lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
-            this.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.pnlForm.BackColor = System.Drawing.Color.White;
             this.pnlForm.Controls.Add(this.lblImageHint);
