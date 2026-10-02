@@ -15,12 +15,23 @@ namespace TestApplication
 
         public PatientDatabase()
         {
-            string appData = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "TestApplication");
+            string databaseDirectory = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "DataBase");
 
-            Directory.CreateDirectory(appData);
-            _databasePath = Path.Combine(appData, "PatientRecords.db");
+            Directory.CreateDirectory(databaseDirectory);
+            _databasePath = Path.Combine(databaseDirectory, "PatientRecords.db");
+
+            // Preserve existing installations: on the first run after this change,
+            // copy the old LocalAppData database beside the application if needed.
+            string oldDatabasePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "TestApplication",
+                "PatientRecords.db");
+
+            if (!File.Exists(_databasePath) && File.Exists(oldDatabasePath))
+                File.Copy(oldDatabasePath, _databasePath, false);
+
             _connectionString = "Data Source=" + _databasePath + ";Version=3;Foreign Keys=True;";
 
             Initialize();
