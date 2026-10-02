@@ -53,20 +53,32 @@ namespace TestApplication
             // header explicitly Persian/RTL and always visible above its panel.
             pnlHeader.RightToLeft = RightToLeft.No;
 
-            // Header labels use explicit physical right alignment. Do not rely on
-            // RTL mirroring here because it can place the text outside the visible label.
-            lblTitle.RightToLeft = RightToLeft.No;
-            lblTitle.TextAlign = ContentAlignment.MiddleRight;
-            lblTitle.ForeColor = Color.White;
-            lblTitle.Visible = true;
+            // Draw the Persian header ourselves. This avoids WinForms Label/RTL
+            // mirroring issues that can make the header text disappear.
+            lblTitle.Visible = false;
+            lblSubtitle.Visible = false;
+            pnlHeader.Paint += pnlHeader_Paint;
+        }
 
-            lblSubtitle.RightToLeft = RightToLeft.No;
-            lblSubtitle.TextAlign = ContentAlignment.MiddleRight;
-            lblSubtitle.ForeColor = Color.FromArgb(219, 234, 254);
-            lblSubtitle.Visible = true;
+        private void pnlHeader_Paint(object sender, PaintEventArgs e)
+        {
+            string title = _patientId > 0 ? "اصلاح پرونده بیمار" : "ایجاد پرونده بیمار";
+            string subtitle = _patientId > 0
+                ? "اطلاعات پرونده و تصویر بیمار را می‌توانید اصلاح کنید."
+                : "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
 
-            lblTitle.BringToFront();
-            lblSubtitle.BringToFront();
+            Rectangle titleBounds = new Rectangle(24, 7, pnlHeader.ClientSize.Width - 48, 34);
+            Rectangle subtitleBounds = new Rectangle(24, 40, pnlHeader.ClientSize.Width - 48, 25);
+
+            TextFormatFlags flags = TextFormatFlags.Right |
+                                    TextFormatFlags.VerticalCenter |
+                                    TextFormatFlags.RightToLeft |
+                                    TextFormatFlags.NoPrefix |
+                                    TextFormatFlags.SingleLine;
+
+            TextRenderer.DrawText(e.Graphics, title, lblTitle.Font, titleBounds, Color.White, flags);
+            TextRenderer.DrawText(e.Graphics, subtitle, lblSubtitle.Font, subtitleBounds,
+                Color.FromArgb(219, 234, 254), flags);
         }
 
         private void ConfigureInputFocusHighlight()
@@ -144,6 +156,7 @@ namespace TestApplication
             Text = "ایجاد پرونده بیمار";
             lblTitle.Text = "ایجاد پرونده بیمار";
             lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
+            pnlHeader.Invalidate();
             txtFirstName.Focus();
         }
 
@@ -161,6 +174,7 @@ namespace TestApplication
             Text = "اصلاح پرونده بیمار";
             lblTitle.Text = "اصلاح پرونده بیمار";
             lblSubtitle.Text = "اطلاعات پرونده و تصویر بیمار را می‌توانید اصلاح کنید.";
+            pnlHeader.Invalidate();
 
             txtFirstName.Text = patient.FirstName;
             txtLastName.Text = patient.LastName;
