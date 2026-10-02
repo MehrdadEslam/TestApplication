@@ -163,7 +163,7 @@ namespace TestApplication
             this.txtSearch.Location = new System.Drawing.Point(138, 38);
             this.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtSearch.Size = new System.Drawing.Size(487, 30);
-            this.txtSearch.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtSearch.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
 
             this.btnSearch.BackColor = System.Drawing.Color.FromArgb(240, 249, 255);
