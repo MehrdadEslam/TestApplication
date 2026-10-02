@@ -82,19 +82,23 @@ namespace TestApplication
             this.pnlHeaderAccent.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlHeaderAccent.Height = 4;
 
-            this.lblTitle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblTitle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.lblTitle.BackColor = System.Drawing.Color.Transparent;
             this.lblTitle.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(470, 9);
-            this.lblTitle.Size = new System.Drawing.Size(430, 32);
+            this.lblTitle.Location = new System.Drawing.Point(24, 8);
+            this.lblTitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblTitle.Size = new System.Drawing.Size(876, 32);
             this.lblTitle.Text = "ایجاد پرونده بیمار";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
-            this.lblSubtitle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblSubtitle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.lblSubtitle.BackColor = System.Drawing.Color.Transparent;
             this.lblSubtitle.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(219, 234, 254);
-            this.lblSubtitle.Location = new System.Drawing.Point(350, 43);
-            this.lblSubtitle.Size = new System.Drawing.Size(550, 22);
+            this.lblSubtitle.Location = new System.Drawing.Point(24, 42);
+            this.lblSubtitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblSubtitle.Size = new System.Drawing.Size(876, 22);
             this.lblSubtitle.Text = "اطلاعات پرونده را تکمیل کنید؛ نام پدر اختیاری است.";
             this.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
@@ -189,32 +193,32 @@ namespace TestApplication
             this.txtFirstName.Location = new System.Drawing.Point(398, 36);
             this.txtFirstName.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtFirstName.Size = new System.Drawing.Size(286, 29);
-            this.txtFirstName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtFirstName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
             this.txtLastName.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtLastName.Location = new System.Drawing.Point(398, 92);
             this.txtLastName.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtLastName.Size = new System.Drawing.Size(286, 29);
-            this.txtLastName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtLastName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
             this.txtFatherName.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtFatherName.Location = new System.Drawing.Point(398, 148);
             this.txtFatherName.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtFatherName.Size = new System.Drawing.Size(286, 29);
-            this.txtFatherName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtFatherName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
             this.txtFileNumber.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtFileNumber.Location = new System.Drawing.Point(398, 204);
             this.txtFileNumber.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtFileNumber.Size = new System.Drawing.Size(286, 29);
-            this.txtFileNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtFileNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
             this.txtMobile.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.txtMobile.Location = new System.Drawing.Point(398, 260);
             this.txtMobile.MaxLength = 15;
             this.txtMobile.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtMobile.Size = new System.Drawing.Size(286, 29);
-            this.txtMobile.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtMobile.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
             this.lblImageTitle.Font = new System.Drawing.Font("Tahoma", 10.5F, System.Drawing.FontStyle.Bold);
             this.lblImageTitle.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42);
@@ -243,7 +247,7 @@ namespace TestApplication
             this.txtImagePath.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.txtImagePath.Size = new System.Drawing.Size(240, 24);
             this.txtImagePath.Text = "تصویری انتخاب نشده است";
-            this.txtImagePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtImagePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 
             this.btnAttachImage.BackColor = System.Drawing.Color.FromArgb(238, 242, 255);
             this.btnAttachImage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(199, 210, 254);
