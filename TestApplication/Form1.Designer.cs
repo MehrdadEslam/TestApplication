@@ -57,57 +57,67 @@ namespace TestApplication
             this.lblFirstName.Location = new System.Drawing.Point(560, 85);
             this.lblFirstName.Size = new System.Drawing.Size(170, 25);
             this.lblFirstName.Text = "نام";
+            this.lblFirstName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.txtFirstName.Font = new System.Drawing.Font("Tahoma", 10F);
             this.txtFirstName.Location = new System.Drawing.Point(330, 82);
             this.txtFirstName.Name = "txtFirstName";
             this.txtFirstName.Size = new System.Drawing.Size(220, 28);
+            this.txtFirstName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtFirstName.TabIndex = 0;
 
             this.lblLastName.Font = new System.Drawing.Font("Tahoma", 10F);
             this.lblLastName.Location = new System.Drawing.Point(560, 125);
             this.lblLastName.Size = new System.Drawing.Size(170, 25);
             this.lblLastName.Text = "نام خانوادگی";
+            this.lblLastName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.txtLastName.Font = new System.Drawing.Font("Tahoma", 10F);
             this.txtLastName.Location = new System.Drawing.Point(330, 122);
             this.txtLastName.Name = "txtLastName";
             this.txtLastName.Size = new System.Drawing.Size(220, 28);
+            this.txtLastName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtLastName.TabIndex = 1;
 
             this.lblFileNumber.Font = new System.Drawing.Font("Tahoma", 10F);
             this.lblFileNumber.Location = new System.Drawing.Point(560, 165);
             this.lblFileNumber.Size = new System.Drawing.Size(170, 25);
             this.lblFileNumber.Text = "شماره پرونده";
+            this.lblFileNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.txtFileNumber.Font = new System.Drawing.Font("Tahoma", 10F);
             this.txtFileNumber.Location = new System.Drawing.Point(330, 162);
             this.txtFileNumber.Name = "txtFileNumber";
             this.txtFileNumber.Size = new System.Drawing.Size(220, 28);
+            this.txtFileNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtFileNumber.TabIndex = 2;
 
             this.lblMobile.Font = new System.Drawing.Font("Tahoma", 10F);
             this.lblMobile.Location = new System.Drawing.Point(560, 205);
             this.lblMobile.Size = new System.Drawing.Size(170, 25);
             this.lblMobile.Text = "شماره موبایل";
+            this.lblMobile.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.txtMobile.Font = new System.Drawing.Font("Tahoma", 10F);
             this.txtMobile.Location = new System.Drawing.Point(330, 202);
             this.txtMobile.MaxLength = 15;
             this.txtMobile.Name = "txtMobile";
             this.txtMobile.Size = new System.Drawing.Size(220, 28);
+            this.txtMobile.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtMobile.TabIndex = 3;
 
             this.lblImage.Font = new System.Drawing.Font("Tahoma", 10F);
             this.lblImage.Location = new System.Drawing.Point(560, 248);
             this.lblImage.Size = new System.Drawing.Size(170, 25);
             this.lblImage.Text = "تصویر ضمیمه";
+            this.lblImage.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             this.txtImagePath.Font = new System.Drawing.Font("Tahoma", 9F);
             this.txtImagePath.Location = new System.Drawing.Point(330, 245);
             this.txtImagePath.Name = "txtImagePath";
             this.txtImagePath.ReadOnly = true;
             this.txtImagePath.Size = new System.Drawing.Size(220, 26);
+            this.txtImagePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtImagePath.TabStop = false;
 
             this.btnAttachImage.Font = new System.Drawing.Font("Tahoma", 9F);
@@ -158,7 +168,7 @@ namespace TestApplication
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.RightToLeftLayout = true;
+            this.RightToLeftLayout = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "پرونده بیمار";
 
