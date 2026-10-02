@@ -53,6 +53,8 @@ namespace TestApplication
                         "Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "FirstName TEXT NOT NULL, " +
                         "LastName TEXT NOT NULL, " +
+                        "NationalId TEXT NULL, " +
+                        "BirthDate TEXT NULL, " +
                         "FatherName TEXT NULL, " +
                         "FileNumber TEXT NOT NULL UNIQUE COLLATE NOCASE, " +
                         "Mobile TEXT NOT NULL, " +
@@ -70,6 +72,8 @@ namespace TestApplication
                 }
 
                 EnsureColumn(connection, "Patients", "FatherName", "TEXT NULL");
+                EnsureColumn(connection, "Patients", "NationalId", "TEXT NULL");
+                EnsureColumn(connection, "Patients", "BirthDate", "TEXT NULL");
             }
         }
 
@@ -112,12 +116,14 @@ namespace TestApplication
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 command.CommandText =
-                    "SELECT Id, FirstName, LastName, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
+                    "SELECT Id, FirstName, LastName, NationalId, BirthDate, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
                     "FROM Patients " +
                     "WHERE @Query = '' " +
                     "OR FirstName LIKE @LikeQuery " +
                     "OR LastName LIKE @LikeQuery " +
                     "OR FatherName LIKE @LikeQuery " +
+                    "OR NationalId LIKE @LikeQuery " +
+                    "OR BirthDate LIKE @LikeQuery " +
                     "OR (FirstName || ' ' || LastName) LIKE @LikeQuery " +
                     "OR FileNumber LIKE @LikeQuery " +
                     "OR Mobile LIKE @LikeQuery " +
@@ -142,7 +148,7 @@ namespace TestApplication
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 command.CommandText =
-                    "SELECT Id, FirstName, LastName, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
+                    "SELECT Id, FirstName, LastName, NationalId, BirthDate, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt " +
                     "FROM Patients WHERE Id = @Id LIMIT 1;";
                 command.Parameters.AddWithValue("@Id", id);
 
@@ -206,8 +212,8 @@ namespace TestApplication
                 {
                     command.CommandText =
                         "INSERT INTO Patients " +
-                        "(FirstName, LastName, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt) " +
-                        "VALUES (@FirstName, @LastName, @FatherName, @FileNumber, @Mobile, @ImageData, @ImageFileName, @RegisteredAt, @UpdatedAt); " +
+                        "(FirstName, LastName, NationalId, BirthDate, FatherName, FileNumber, Mobile, ImageData, ImageFileName, RegisteredAt, UpdatedAt) " +
+                        "VALUES (@FirstName, @LastName, @NationalId, @BirthDate, @FatherName, @FileNumber, @Mobile, @ImageData, @ImageFileName, @RegisteredAt, @UpdatedAt); " +
                         "SELECT last_insert_rowid();";
                     command.Parameters.AddWithValue("@RegisteredAt", now);
                 }
@@ -215,7 +221,7 @@ namespace TestApplication
                 {
                     command.CommandText =
                         "UPDATE Patients SET " +
-                        "FirstName=@FirstName, LastName=@LastName, FatherName=@FatherName, FileNumber=@FileNumber, Mobile=@Mobile, " +
+                        "FirstName=@FirstName, LastName=@LastName, NationalId=@NationalId, BirthDate=@BirthDate, FatherName=@FatherName, FileNumber=@FileNumber, Mobile=@Mobile, " +
                         "ImageData=@ImageData, ImageFileName=@ImageFileName, UpdatedAt=@UpdatedAt " +
                         "WHERE Id=@Id; " +
                         "SELECT @Id;";
@@ -224,6 +230,10 @@ namespace TestApplication
 
                 command.Parameters.AddWithValue("@FirstName", patient.FirstName.Trim());
                 command.Parameters.AddWithValue("@LastName", patient.LastName.Trim());
+                command.Parameters.AddWithValue("@NationalId",
+                    string.IsNullOrWhiteSpace(patient.NationalId) ? (object)DBNull.Value : patient.NationalId.Trim());
+                command.Parameters.AddWithValue("@BirthDate",
+                    string.IsNullOrWhiteSpace(patient.BirthDate) ? (object)DBNull.Value : patient.BirthDate.Trim());
                 command.Parameters.AddWithValue("@FatherName",
                     string.IsNullOrWhiteSpace(patient.FatherName) ? (object)DBNull.Value : patient.FatherName.Trim());
                 command.Parameters.AddWithValue("@FileNumber", patient.FileNumber.Trim());
@@ -259,6 +269,8 @@ namespace TestApplication
                 Id = Convert.ToInt64(reader["Id"]),
                 FirstName = Convert.ToString(reader["FirstName"]),
                 LastName = Convert.ToString(reader["LastName"]),
+                NationalId = reader["NationalId"] == DBNull.Value ? string.Empty : Convert.ToString(reader["NationalId"]),
+                BirthDate = reader["BirthDate"] == DBNull.Value ? string.Empty : Convert.ToString(reader["BirthDate"]),
                 FatherName = reader["FatherName"] == DBNull.Value ? string.Empty : Convert.ToString(reader["FatherName"]),
                 FileNumber = Convert.ToString(reader["FileNumber"]),
                 Mobile = Convert.ToString(reader["Mobile"]),
@@ -303,6 +315,8 @@ namespace TestApplication
                     {
                         FirstName = ReadLegacyValue(lines, "نام:"),
                         LastName = ReadLegacyValue(lines, "نام خانوادگی:"),
+                        NationalId = ReadLegacyValue(lines, "کد ملی:"),
+                        BirthDate = ReadLegacyValue(lines, "تاریخ تولد:"),
                         FatherName = ReadLegacyValue(lines, "نام پدر:"),
                         FileNumber = fileNumber,
                         Mobile = ReadLegacyValue(lines, "شماره موبایل:"),
@@ -363,6 +377,8 @@ namespace TestApplication
         public long Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string NationalId { get; set; }
+        public string BirthDate { get; set; }
         public string FatherName { get; set; }
         public string FileNumber { get; set; }
         public string Mobile { get; set; }
