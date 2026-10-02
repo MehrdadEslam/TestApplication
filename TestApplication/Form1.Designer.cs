@@ -265,6 +265,7 @@ namespace TestApplication
             this.MinimumSize = new System.Drawing.Size(1050, 620);
             this.Name = "Form1";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RightToLeftLayout = true;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "لیست بیماران";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
