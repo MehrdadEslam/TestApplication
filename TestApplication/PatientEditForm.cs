@@ -93,7 +93,8 @@ namespace TestApplication
             Rectangle focusBorder = focusedInput.Bounds;
             focusBorder.Inflate(3, 3);
 
-            using (Pen pen = new Pen(Color.FromArgb(218, 165, 32), 3F))
+            Color focusColor = Color.FromArgb(Properties.Settings.Default.FocusBorderColorArgb);
+            using (Pen pen = new Pen(focusColor, 3F))
             {
                 e.Graphics.DrawRectangle(pen, focusBorder);
             }
